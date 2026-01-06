@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Couleurs
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+clear
+echo -e "${CYAN}Vérification de la connexion internet...${NC}"
+
+# Fonction de test
+check_net() {
+    ping -c 1 8.8.8.8 > /dev/null 2>&1
+}
+
+# 1. Si déjà connecté (Câble), on sort direct
+if check_net; then
+    echo -e "${GREEN}Connexion détectée ! Lancement de l'installation...${NC}"
+    sleep 1
+    exit 0
+fi
+
+# 2. Sinon, on lance le gestionnaire Wi-Fi
+echo -e "${RED}Aucune connexion détectée.${NC}"
+echo "Démarrage du service réseau..."
+
+# On s'assure que NetworkManager tourne sur le Live CD
+systemctl start NetworkManager
+
+while ! check_net; do
+    clear
+    echo -e "${RED}!!! INTERNET REQUIS POUR INSTALLER VERSO OS !!!${NC}"
+    echo ""
+    echo "L'installateur a besoin de télécharger les paquets."
+    echo "Appuie sur [Entrée] pour ouvrir le menu Wi-Fi..."
+    read
+   
+    # Lance l'interface graphique terminal
+    nmtui
+   
+    # On revérifie après fermeture du menu
+    echo "Vérification de la connexion..."
+    sleep 2
+    if check_net; then
+        echo -e "${GREEN}Connexion confirmée! Lancement de l'installation...${NC}"
+        sleep 2
+        break
+    else
+        echo -e "${RED}Aucune connexion détectée.${NC}"
+        echo "Réessaie ou branche un câble Ethernet."
+        sleep 2
+    fi
+done
