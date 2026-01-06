@@ -1,0 +1,47 @@
+/* Style Moderne pour Waybar */
+
+  * {
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono Nerd Font", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    min-height: 0;
+  }
+
+  window#waybar {
+    background: transparent; /* Fond transparent pour effet flottant */
+    color: white;
+  }
+
+  /* Modules (Heure, Wifi, etc.) */
+  #workspaces, #clock, #battery, #cpu, #memory, #disk, #temperature, #backligt, #network, #pulseaudio, #wireplumber, #tray, #mode, #idle_inhibitor, #mpd {
+    padding: 0 15px;
+    margin: 5px 3px; /* Espacement entre les blocs */
+    background-color: #1e1e2e; /* Gris foncé moderne */
+    color: #ffffff;
+    border-radius: 15px; /* Coins arrondis */
+    opacity: 0.9;
+  }
+
+  /* Espécifique pour les espaces de travail */
+  #workspaces button {
+    padding: 0 5px;
+    color: #7f849c;
+  }
+  #workspaces button.active {
+    color: #cba6f7; /* Couleur active (Violet) */
+  }
+  #workspaces button:hover {
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: inherit;
+    text-shadow: inherit;
+  }
+
+  /* Couleurs spécifiques pour égayer */
+  #clock { color: #cba6f7; font-weight: bold; }
+  #network { color: #a6e3a1; }
+  #pulseaudio { color: #89b4fa; }
+  #battery { color: #f9e2af; }
+  #battery.charging { color: #a6e3a1; }
+  #battery.warning:not(.charging) { color: #f38ba8; }
+

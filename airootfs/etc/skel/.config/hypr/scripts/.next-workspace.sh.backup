@@ -1,0 +1,5 @@
+#!/bin/bash
+
+hyprctl dispatch workspace r+1
+sleep 0.1
+hyprctl dispatch focuscurrentorlast
