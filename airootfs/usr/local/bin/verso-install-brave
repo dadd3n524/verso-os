@@ -1,0 +1,56 @@
+#!/bin/bash
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+
+clear
+echo ""
+echo ""
+echo ""
+echo -e "========================================"
+echo -e "${GREEN}     INSTALLATION DE BRAVE BROWSER     ${NC}"
+echo -e "========================================"
+echo ""
+echo ""
+
+if ! command -v yay &> /dev/null; then
+read -p "Voulez-vous installer le gestionnaire de paquets Yay ? (o/n) : " choice
+if [[ "$choice" == "n" || "$choice" == "N" ]]; then
+exit 0
+fi
+
+echo ""
+echo "Mot de passe administrateur : "
+sudo pacman -S --needed --noconfirm git base-devel
+echo ""
+echo -e "${BLUE}Installation de Yay en cours... ${NC}"
+cd /tmp
+rm -rf yay
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si --noconfirm
+
+if ! command -v yay &> /dev/null; then
+echo -e "${RED}Erreur critique : Installation de Yay a echoue. ${NC}"
+read -p "Appuie sur Entree pour continuer"
+exit 1
+fi
+fi
+
+read -p "Lancer Installation de Brave-Browser ? (o/n) : " confirm
+if [[ "$confirm" == "n" || "$confirm" == "N" ]]; then
+exit 0
+fi
+
+yay -S --noconfirm brave-bin
+if [ $? -eq 0 ]; then
+echo -e ""
+echo -e "${BLUE}===========================================${NC}"
+echo -e "${YELLOW}  Brave a ete installe avec succes !! ${NC}"
+echo -e "${BLUE}===========================================${NC}"
+echo -e ""
+else
+echo ""
+echo -e "${RED} Une erreur est survenue. ${NC}"
+fi
+read -p "Appuie sur ENTREE pour fermer cette fenetre : "

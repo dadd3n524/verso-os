@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# --- COULEURS ---
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo -e "${BLUE}:: Recherche de mises à jour...${NC}"
+
+# 1. Vérification d'internet
+if ! ping -c 1 8.8.8.8 &> /dev/null; then
+    echo -e "${RED}Erreur : Pas de connexion internet.${NC}"
+    exit 1
+fi
+
+# 2. Vérification des dépôts officiels (sans sudo)
+# Nécessite le paquet 'pacman-contrib'
+if command -v checkupdates &> /dev/null; then
+    OFFICIAL_UPDATES=$(checkupdates | wc -l)
+else
+    echo "Outil 'checkupdates' manquant. Utilisation de pacman..."
+    OFFICIAL_UPDATES="?"
+fi
+
+# 3. Vérification AUR (si yay est installé)
+AUR_UPDATES=0
+if command -v yay &> /dev/null; then
+    AUR_UPDATES=$(yay -Qua | wc -l)
+fi
+
+# Calcul du total (si possible)
+if [[ "$OFFICIAL_UPDATES" != "?" ]]; then
+    TOTAL=$((OFFICIAL_UPDATES + AUR_UPDATES))
+else
+    TOTAL="?"
+fi
+
+# --- AFFICHAGE ET DÉCISION ---
+
+if [[ "$TOTAL" == "0" ]]; then
+    echo -e "${GREEN}✓ Votre système est à jour. Aucune action requise.${NC}"
+    exit 0
+else
+    echo ""
+    echo -e "${BLUE}=== RAPPORT DE MISE À JOUR ===${NC}"
+    echo -e "Paquets système (Arch) : ${GREEN}$OFFICIAL_UPDATES${NC}"
+    echo -e "Paquets AUR (Brave, etc) : ${GREEN}$AUR_UPDATES${NC}"
+    echo ""
+    
+    # Prompt utilisateur
+    read -p "Voulez-vous lancer la mise à jour maintenant ? (o/n) : " REPOMSE
+    
+    if [[ "$REPOMSE" == "o" || "$REPOMSE" == "O" ]]; then
+        echo ""
+        echo -e "${BLUE}:: Lancement de la mise à jour...${NC}"
+        
+        # Mise à jour combinée (System + AUR)
+        # Si yay est là, il gère tout. Sinon, pacman.
+        if command -v yay &> /dev/null; then
+            yay -Syu
+        else
+            sudo pacman -Syu
+        fi
+        
+        echo ""
+        echo -e "${GREEN}Terminé !${NC}"
+        sleep 2
+    else
+        echo "Mise à jour reportée."
+    fi
+fi
