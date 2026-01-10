@@ -13,34 +13,31 @@ sleep 2
 
 # --- BOUCLE MOT DE PASSE ---
 while true; do
-    PASS=$(yad --entry \
-        --title="Bienvenue sur Verso OS" \
-        --window-icon="system-software-update" \
-        --image="$IMG" --image-on-top \
-        --text="Configuration initiale.\nVeuillez choisir votre mot de passe :" \
-        --hide-text \
-        --button="Annuler:1" --button="Valider:0" \
-        --width=500 --center)
-
-    if [ $? -ne 0 ]; then
-        notify-send "Verso OS" "Configuration reportée."
-        exit 0
-    fi
-
-    # Vérification du sudo
-    if echo "$PASS" | sudo -S -v -k 2> /dev/null; then
-        break
+    echo -e "${CYAN}Veuillez entrer le mot de passe : ${NC}"
+    read -s PASS
+    echo ""
+    if echo "$PASS" | sudo -S -v -k 2>/dev/null; then
+    echo -e "${GREEN}Mot de passe validé!${NC}"
+    break
     else
-        yad --error --text="Mot de passe incorrect !" --button="OK"
+    echo -e "${RED}Mot de passe incorrect. Réessayez :${NC}"
     fi
 done
 
 # --- INSTALLATION ---
-(
     echo "10"
     echo "# Mise à jour des dépôts..."
     echo "$PASS" | sudo -S pacman -Sy --noconfirm
-
+    # Installation de Steam
+    echo -e "${CYAN}Voulez-vous installer Steam ? (o/n) : ${NC}"
+    read -r REP_STEAM
+    if [[ "$REP_STEAM" =~ ^[o0] ]]; then
+    echo "Activation de Multilib et installation..."
+    echo "$PASSWORD" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+    echo "$PASSWORD" | sudo -S pacman -Sy
+    ehco "$PASSWORD" | sudo -S pacman -S --noconfirm steam ttf-liberation
+    fi
+    
     echo "20"
     echo "# Installation des outils de construction..."
     # Nécessaire pour installer Yay et Brave
@@ -72,11 +69,8 @@ done
     echo "# Terminé ! Bienvenue sur Verso OS."
     sleep 2
 
-) | yad --progress \
-    --title="Initialisation Verso OS" \
-    --image="$IMG" --image-on-top \
-    --percentage=0 --width=500 --center --no-buttons --auto-close
-
 # Marqueur de fin
 touch "$LOCKFILE"
-notify-send "Verso OS" "Installation terminée avec succès !"
+notify-send "Verso OS" "Installation terminée avec succès ! L'interface redémarre..."
+sleep 3
+systemctl restart sddm

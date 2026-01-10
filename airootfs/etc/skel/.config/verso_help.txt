@@ -1,0 +1,28 @@
+=========================================
+   VERSO OS - GUIDE & RACCOURCIS
+=========================================
+
+[ GESTION DES FENÊTRES ]
+ Win + K : Fermer la fenêtre (Kill)
+ Ctrl + Q : Fermer certaines fenêtres
+ Ctrl + C : Fermer certaines fenêtres (stopper un processus)
+ Win + M : Éteindre la session
+ Win + Clic Gauche : Déplacer une fenêtre
+ Win + Clic Droit : Redimensionner
+
+[ LANCEMENT D'APPLICATIONS ]
+ // Utilisez Win + Shift pour forcer l'ouverture de l'application dans la fenêtre actuelle
+ Win + B : Navigateur Web (Brave)
+ Win + E : Explorateur de fichiers (Dolphin)
+ Win + F : Recherche de fichiers (Verso Search Tool)
+ Win + Entrée : Terminal
+ Win + Echap : Gestionnaire des tâches (Btop)
+
+[ WIDGETS & OUTILS ]
+ Clic Son (Barre) : Mixeur Audio
+ Clic CPU (Barre) : Task Manager (Btop)
+ Win + Shift + S : Capture d'écran
+
+=========================================
+ Appuyez sur 'q' pour fermer cette fenêtre
+=========================================

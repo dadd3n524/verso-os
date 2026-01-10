@@ -1,0 +1,7 @@
+#!/bin/bash
+if comand -v brave &> /dev/null; then
+brave
+else
+notify-send "Brave n'est pas installé" "Lancement de l'installation en cours..."
+kitty --title "Verso Installer" -e /usr/local/bin/verso-install-brave
+fi

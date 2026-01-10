@@ -14,7 +14,7 @@
   }
 
   /* Modules (Heure, Wifi, etc.) */
-  #workspaces, #clock, #battery, #cpu, #memory, #disk, #temperature, #backligt, #network, #pulseaudio, #wireplumber, #tray, #mode, #idle_inhibitor, #mpd {
+  #workspaces, #clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, #network, #pulseaudio, #wireplumber, #tray, #mode, #idle_inhibitor, #mpd, #custom-sys_monitor, #custom-help {
     padding: 0 15px;
     margin: 5px 3px; /* Espacement entre les blocs */
     background-color: #1e1e2e; /* Gris foncé moderne */
