@@ -27,8 +27,6 @@ wireless-regdb
 broadcom-wl
 b43-fwcutter
 ethtool
-ipw2100-fw
-ipw2200-fw
 modemmanager
 nmap
 openssh
@@ -47,7 +45,6 @@ irssi
 lftp
 rsync
 darkhttpd
-gnu-netcat
 hyprland
 hyprpaper
 xdg-desktop-portal-hyprland
@@ -92,7 +89,6 @@ f2fs-tools
 jfsutils
 nilfs-utils
 udftools
-reiserfsprogs
 lvm2
 mdadm
 dmraid
@@ -130,7 +126,6 @@ mc
 tmux
 screen
 htop
-neofetch
 pacman-contrib
 reflector
 xdg-utils
