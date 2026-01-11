@@ -49,7 +49,7 @@ if [ ! -b "$TARGET_DISK" ]; then
 fi
 
 # --- ÉTAPE 2 : CONFIRMATION ---
-clear
+echo ""
 echo -e "${RED}!!! ATTENTION !!!${NC}"
 echo -e "Le disque ${RED}$TARGET_DISK${NC} sera TOTALEMENT EFFACÉ."
 echo ""
@@ -106,7 +106,7 @@ echo "KEYMAP=cf" > "$MOUNTPOINT/etc/vconsole.conf"
 # --- ÉTAPE 4 : INSTALLATION DU COEUR ---
 echo -e "${GREEN}--> Téléchargement et installation du système...${NC}"
 # Ajout explicite de 'sudo'
-pacstrap -K "$MOUNTPOINT" base linux linux-firmware base-devel networkmanager pipewire nano git sudo
+pacstrap -K "$MOUNTPOINT" base linux linux-firmware base-devel networkmanager pipewire nano git sudo xdg-user-dirs
 
 # Génération Fstab
 genfstab -U "$MOUNTPOINT" >> "$MOUNTPOINT/etc/fstab"
@@ -118,19 +118,23 @@ arch-chroot "$MOUNTPOINT" /bin/bash <<EOF
     # 1. Config Locale
     ln -sf /usr/share/zoneinfo/Canada/Eastern /etc/localtime
     hwclock --systohc
-    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+    echo "fr_CA.UTF-8 UTF-8" > /etc/locale.gen
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
     locale-gen
-    echo "LANG=en_US.UTF-8" > /etc/locale.conf
+    echo "LANG=fr.CA.UTF-8" > /etc/locale.conf
     echo "verso-pc" > /etc/hostname
 
     # 2. Utilisateurs & Mots de passe
     echo "Configuration des mots de passe..."
     echo "root:verso" | chpasswd
-   
+
     # --- CRÉATION UTILISATEUR ---
     useradd -m -G wheel -s /bin/bash verso
     echo "verso:verso" | chpasswd
-    
+
+    # Création forcée des dossiers User
+    su - verso -c "xdg-user-dirs-update"
+
     # Autoriser le groupe wheel pour sudo
     echo "%wheel ALL=(ALL:ALL) ALL" > /etc/sudoers.d/wheel_admin
     chmod 440 /etc/sudoers.d/wheel_admin
@@ -143,7 +147,7 @@ arch-chroot "$MOUNTPOINT" /bin/bash <<EOF
 
     # --- ACTIVATION DE L'AUTOLOGIN (Connexion auto) ---
     echo "Configuration de l'autologin..."
-    
+
     # Retire l'écran de connexion au démarrage
     cat <<AUTOLOGIN > /etc/sddm.conf.d/autologin.conf
 [Autologin]
@@ -230,7 +234,7 @@ if [ -d "$MOUNTPOINT" ]; then
     echo "Tu peux maintenant retirer la clé USB."
     echo "Appuie sur ENTRÉE pour éteindre l'ordinateur."
     read -p ""
-    poweroff
+    reboot
 else
     echo -e "${RED}Erreur critique : Échec de l'installation.${NC}"
 fi
