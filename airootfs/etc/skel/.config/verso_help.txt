@@ -2,26 +2,42 @@
    VERSO OS - GUIDE & RACCOURCIS
 =========================================
 
-[ GESTION DES FENÊTRES ]
- Win + K : Fermer la fenêtre (Kill)
- Ctrl + Q : Fermer certaines fenêtres
- Ctrl + C : Fermer certaines fenêtres (stopper un processus)
- Win + M : Éteindre la session
- Win + Clic Gauche : Déplacer une fenêtre
- Win + Clic Droit : Redimensionner
+ [ NAVIGATION DANS L'INTERFACE ]
+  Win + Espace : Menu principal des applications
+  Win + R : Lanceur rapide (Wofi)
+  Win + Flèches : Aller à la fenêtre à (gauche/droite/haut/bas)
+  Win + Ctrl + Flèches (gauche/droite) : Aller au bureau suivant / précédent
+  Win + 1 à 0 : Changer de bureau (Workspace)
+  Win + Shift + 1-0 : Envoyer la fenêtre vers le bureau #
+  Win + Tab : Vue d'ensemble des fenêtres ouvertes
+  Win + Clic Gauche : Déplacer une fenêtre (Mode Flottant)
+  Win + Clic Droit : Redimensionner (Mode Flottant)
+  Win + V : Mode Flottant / Mode Tuile
+  Win + K : Fermer la fenêtre active
 
-[ LANCEMENT D'APPLICATIONS ]
- // Utilisez Win + Shift pour forcer l'ouverture de l'application dans la fenêtre actuelle
- Win + B : Navigateur Web (Brave)
- Win + E : Explorateur de fichiers (Dolphin)
- Win + F : Recherche de fichiers (Verso Search Tool)
- Win + Entrée : Terminal
- Win + Echap : Gestionnaire des tâches (Btop)
+ [ APPLICATIONS CLÉS ]
+  * Astuce : Ajoutez SHIFT pour forcer l'ouverture en split-screen
+  Win + Entrée : Terminal (Kitty)
+  Win + W : Navigateur Web (Brave)
+  Win + E : Fichiers (Dolphin)
+  Win + S : Jeux (Steam)
+  Win + T : Torrent (Qbittorrent)
+  Win + C : Calculatrice (Qalculate)
+  Win + F : Recherche de fichiers (Verso Search)
 
-[ WIDGETS & OUTILS ]
- Clic Son (Barre) : Mixeur Audio
- Clic CPU (Barre) : Task Manager (Btop)
- Win + Shift + S : Capture d'écran
+ [ SYSTÈME & OUTILS ]
+  Win + Echap : Gestionnaire de tâches (Btop)
+  Win + Shift + S : Capture d'écran (Screenshot)
+  Scroll souris sur le bouton volume : Réglage du volume
+
+ [ DÉBUGAGE ]
+  Win + Backspace : Recharger l'interface (Refresh)
+  Win + Shift + Back: Recharger le système (Reload)
+
+ [ AVANCÉ (GROUPES) ]
+  Win + G : Créer un groupe d'onglets
+  Win + Shift + G : Sortir du groupe
+  Win + Z : Espace magique (Caché)
 
 =========================================
  Appuyez sur 'q' pour fermer cette fenêtre

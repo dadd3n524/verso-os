@@ -13,7 +13,7 @@ NC='\033[0m'
 
 clear
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${BLUE} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}V${NC}${PURPLE}E${NC}${CYAN}R${NC}${RED}S${NC}${YELLOW}O${NC} ${PINK}O${NC}${ORANGE}S ${NC}"
+echo -e "${BLUE} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
 echo -e "${BLUE}======================================================${NC}"
 echo ""
 echo "Configuration du système."
@@ -140,6 +140,17 @@ arch-chroot "$MOUNTPOINT" /bin/bash <<EOF
     echo "[Users]" > /etc/sddm.conf.d/uid.conf
     echo "MinimumUid=1000" >> /etc/sddm.conf.d/uid.conf
     echo "HideShells=/sbin/nologin,/bin/false" >> /etc/sddm.conf.d/uid.conf
+
+    # --- ACTIVATION DE L'AUTOLOGIN (Connexion auto) ---
+    echo "Configuration de l'autologin..."
+    
+    # Retire l'écran de connexion au démarrage
+    cat <<AUTOLOGIN > /etc/sddm.conf.d/autologin.conf
+[Autologin]
+User=verso
+Session=hyprland.desktop
+Relogin=true
+AUTOLOGIN
    
     # 3. Bootloader
     if [ -d /sys/firmware/efi/efivars ]; then
@@ -166,18 +177,38 @@ if [ -d "$MOUNTPOINT" ]; then
     echo ""
     echo -e "${GREEN}--> Installation des paquets supplémentaires...${NC}"
    
-    if [ -f /pkglist.txt ]; then
-        cat /pkglist.txt | arch-chroot $MOUNTPOINT pacman -S --needed --noconfirm -
+    # Cherche pkglist.txt à la racine ou dans /root
+    PKGLIST="/pkglist.txt"
+    [ ! -f "$PKGLIST" ] && PKGLIST="/root/pkglist.txt"
+
+    if [ -f "$PKGLIST" ]; then
+        cat "$PKGLIST" | arch-chroot $MOUNTPOINT pacman -S --needed --noconfirm -
     else
-        echo -e "${RED}Attention : pkglist.txt non trouvé.${NC}"
+        echo -e "${YELLOW}Note : pkglist.txt non trouvé (Installation de base uniquement).${NC}"
     fi
 
     echo -e "${GREEN}--> Configuration finale du système...${NC}"
    
-    # Copie des configs pour l'utilisateur VERSO
+    # 1. COPIE DES CONFIGS UTILISATEUR (.config)
     if [ -d /etc/skel/.config ]; then
-        cp -r /etc/skel/.config "$MOUNTPOINT/home/verso/"
+        echo " - Copie des fichiers de configuration..."
+        mkdir -p "$MOUNTPOINT/home/verso/.config"
+        cp -r /etc/skel/.config/. "$MOUNTPOINT/home/verso/.config/"
         arch-chroot "$MOUNTPOINT" chown -R verso:verso /home/verso/.config
+    fi
+
+    # 2. COPIE DES SCRIPTS (bin)
+    if [ -d /usr/local/bin ]; then
+        echo " - Copie des scripts Verso..."
+        mkdir -p "$MOUNTPOINT/usr/local/bin"
+        cp -f /usr/local/bin/* "$MOUNTPOINT/usr/local/bin/"
+        
+        # Nettoyage : Supprime l'installeur du système final
+        rm -f "$MOUNTPOINT/usr/local/bin/install-verso"
+        rm -f "$MOUNTPOINT/usr/local/bin/setup-verso-iso" 
+        
+        # Permissions
+        chmod +x "$MOUNTPOINT/usr/local/bin/"*
     fi
 
     echo -e "${GREEN}--> Activation des services...${NC}"
