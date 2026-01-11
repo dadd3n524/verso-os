@@ -5,7 +5,7 @@ iso_name="verso_os"
 iso_label="VERSO_OS_V1"
 iso_publisher="dadd3n <https://dadd3n.xyz>"
 iso_application="Verso OS Live Environment"
-iso_version="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
+iso_version="BETA"@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
 bootmodes=('bios.syslinux'

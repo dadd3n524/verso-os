@@ -1,0 +1,10 @@
+#!/bin/bash
+CLASS="verso_backlight"
+
+if pgrep -f "kitty --class $CLASS" > /dev/null; then
+    pkill -f "kitty --class $CLASS"
+    exit 0
+fi
+
+# Lance kitty avec notre UI personnalisée
+hyprctl dispatch exec "[float; size 400 300; center; pin; noanim] kitty --class $CLASS -e /usr/local/bin/verso_backlight_ui"

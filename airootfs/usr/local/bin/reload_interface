@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# 1. Recharger la configuration interne d'Hyprland (Couleurs, règles, binds)
+hyprctl reload
+
+# 2. Terminer l'interface
+killall waybar
+killall swaybg # Ou hyprpaper, selon ce que tu utilises
+killall dunst # Ou mako, pour les notifs
+
+# 3. Relancer l'interface
+waybar &
+swaybg -i /usr/share/backgrounds/verso.jpg & # Adapte le chemin !
+dunst &
+
+# 4. Notification de confirmation
+#notify-send "Verso OS" "Interface rechargée avec succès !"

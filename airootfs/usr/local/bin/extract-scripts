@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# --- CONFIGURATION ---
+SOURCE="/usr/local/bin"
+DEST="$HOME/.backup/bin"
+
+# Liste des scripts à sauvegarder
+# J'ai inclus 'extract-config' et 'extract-bin' pour qu'ils se sauvegardent eux-mêmes !
+ELEMENTS=(
+    "browser-home"
+    "extract-config"
+    "extract-scripts"
+    "grouped-windows.sh"
+    "menu_applis"
+    "reload_interface"
+    "safe_quit"
+    "scroll"
+    "smart_open"
+    "sys_monitor"
+    "toggle_audio"
+    "toggle_backlight"
+    "toggle_help"
+    "toggle_power"
+    "toggle_tasks"
+    "verso_backlight_ui"
+    "verso-browser"
+    "verso-install-brave"
+    "verso-loading"
+    "verso_power_ui"
+    "verso_search"
+    "verso-update"
+    "verso-welcome"
+    "zapping.sh"
+)
+
+# --- DÉBUT DU SCRIPT ---
+
+echo "🚀 Démarrage de l'extraction des scripts (BIN)..."
+
+# 1. Créer le dossier de destination s'il n'existe pas
+if [ ! -d "$DEST" ]; then
+    echo "📂 Création du dossier de backup : $DEST"
+    mkdir -p "$DEST"
+fi
+
+# 2. Boucle sur chaque élément de la liste
+for item in "${ELEMENTS[@]}"; do
+    CHEMIN_SRC="$SOURCE/$item"
+    CHEMIN_DEST="$DEST/$item"
+
+    if [ -e "$CHEMIN_SRC" ]; then
+        # On copie le fichier (cp -f pour forcer l'écrasement sans demander)
+        cp -f "$CHEMIN_SRC" "$DEST/"
+        echo "✅ Copié : $item"
+    else
+        echo "⚠️ Ignoré : $item (Introuvable dans $SOURCE)"
+    fi
+done
+
+echo "------------------------------------------------"
+echo "🎉 Scripts sauvegardés avec succès vers $DEST !"

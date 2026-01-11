@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# --- CONFIGURATION ---
+SOURCE="$HOME/.config"
+DEST="$HOME/.backup/.config"
+
+# Liste des dossiers/fichiers à sauvegarder (La Whitelist)
+# Ajoute ou retire des noms ici selon tes besoins !
+ELEMENTS=(
+    "hypr"
+    "waybar"
+    "kitty"
+    "micro"
+    "gtk-3.0"
+    "dconf"
+    "btop"
+    "menus"
+    "volumeicon"
+    "mimeapps.list"
+    "dolphinrc"
+    "verso_help.txt"
+)
+
+# --- DÉBUT DU SCRIPT ---
+
+echo "🚀 Démarrage de l'extraction de la configuration..."
+
+# 1. Créer le dossier de destination s'il n'existe pas
+if [ ! -d "$DEST" ]; then
+    echo "📂 Création du dossier de backup : $DEST"
+    mkdir -p "$DEST"
+fi
+
+# 2. Boucle sur chaque élément de la liste
+for item in "${ELEMENTS[@]}"; do
+    CHEMIN_SRC="$SOURCE/$item"
+    CHEMIN_DEST="$DEST/$item"
+
+    if [ -e "$CHEMIN_SRC" ]; then
+        # On supprime l'ancienne version dans le backup pour éviter les conflits
+        rm -rf "$CHEMIN_DEST"
+        
+        # On copie la nouvelle version
+        cp -r "$CHEMIN_SRC" "$DEST/"
+        echo "✅ Copié : $item"
+    else
+        echo "⚠️ Ignoré : $item (Introuvable dans $SOURCE)"
+    fi
+done
+
+echo "------------------------------------------------"
+echo "🎉 Extraction terminée avec succès vers $DEST !"

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# --- 1. TOGGLE ---
+if pkill -x "wofi"; then
+    exit 0
+fi
+# --- 2. OUVERTURE DU MENU ---
+CHOIX=$(echo -e "🖥️ Steam\n🖥️ RetroArch\n📁 Gestionnaire de fichiers\n🌎 Navigateur Web\n🖥️ Terminal\n🔧 Paramètres" | wofi --show dmenu --prompt "Outils")
+# --- 3. ENTRÉES DU MENU ---
+case "$CHOIX" in
+    "🖥️ Lteam") steam ;;
+    "🖥️ RetroArch") retroarch ;;
+    "📁 Gestionnaire de fichiers") dolphin ;;
+    "🌎 Navigateur Web") brave ;;
+    "🖥️ Terminal") kitty ;;
+    "🔧 Paramètres") lxappearance ;;
+esac
