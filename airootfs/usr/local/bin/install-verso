@@ -13,7 +13,7 @@ NC='\033[0m'
 
 clear
 echo -e "${BLUE}======================================================${NC}"
-echo -e "${BLUE} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
+echo -e "${YELLOW} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
 echo -e "${BLUE}======================================================${NC}"
 echo ""
 echo "Configuration du système."
@@ -192,6 +192,14 @@ if [ -d "$MOUNTPOINT" ]; then
     fi
 
     echo -e "${GREEN}--> Configuration finale du système...${NC}"
+
+    # VALIDATION DE L'EXISTENCE DU DOSSIER /home/verso AVANT LA COPIE DES FICHIERS
+    if [ ! -d "$MOUNTPOINT/home/verso"]; then
+        echo -e "${YELLOW}ERREUR: Dossier utilisateur introuvable, création du dossier en cours..."
+        sleep 2
+        mkdir -p "$MOUNTPOINT/home/verso"
+        arch-chroot "$MOUNTPOINT" chown verso:verso /home/verso
+    fi
    
     # 1. COPIE DES CONFIGS UTILISATEUR (.config)
     if [ -d /etc/skel/.config ]; then
@@ -199,6 +207,9 @@ if [ -d "$MOUNTPOINT" ]; then
         mkdir -p "$MOUNTPOINT/home/verso/.config"
         cp -r /etc/skel/.config/. "$MOUNTPOINT/home/verso/.config/"
         arch-chroot "$MOUNTPOINT" chown -R verso:verso /home/verso/.config
+    else
+        echo -e "${RED}ERREUR: LES FICHIERS CONFIG N'ONT PAS ÉTÉ COPIÉS CORRECTEMENT${NC}"
+        sleep 2
     fi
 
     # 2. COPIE DES SCRIPTS (bin)
@@ -213,13 +224,19 @@ if [ -d "$MOUNTPOINT" ]; then
         
         # Permissions
         chmod +x "$MOUNTPOINT/usr/local/bin/"*
+    else
+        echo -e "${RED}ERREUR: LES FICHIERS SCRIPTS N'ONT PAS ÉTÉ COPIÉS CORRECTEMENT${NC}"
+        sleep 2
     fi
 
     echo -e "${GREEN}--> Activation des services...${NC}"
     arch-chroot $MOUNTPOINT systemctl enable sddm
     arch-chroot $MOUNTPOINT systemctl enable NetworkManager
     arch-chroot $MOUNTPOINT systemctl enable bluetooth
-
+    arch-chroot $MOUNTPOINT systemctl enable power-profiles-daemon
+    arch-chroot $MOUNTPOINT systemctl enable cups
+    arch-chroot $MOUNTPOINT systemctl enable fstrim.timer
+    
     # --- FIN ZEN ---
     umount -R "$MOUNTPOINT" 2>/dev/null
 

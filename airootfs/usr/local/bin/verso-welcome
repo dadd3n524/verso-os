@@ -3,6 +3,7 @@
 # --- CONFIGURATION ---
 IMG="/usr/share/backgrounds/verso_banner.jpg"
 LOCKFILE="$HOME/.config/verso-setup-done"
+UPDATE_SCRIPT="/usr/local/bin/verso-update"
 
 # Si le fichier témoin existe, on quitte
 if [ -f "$LOCKFILE" ]; then
@@ -68,6 +69,13 @@ done
     echo "100"
     echo "# Terminé ! Bienvenue sur Verso OS."
     sleep 2
+
+    if [ -x "$UPDATE_SCRIPT" ]; then
+    echo "Mise à jour en cours..."
+    "$UPDATE_SCRIPT"
+    else
+    echo "ERREUR: verso-update introuvable"
+    fi
 
 # Marqueur de fin
 touch "$LOCKFILE"
