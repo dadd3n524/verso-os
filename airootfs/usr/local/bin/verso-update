@@ -14,7 +14,38 @@ if ! ping -c 1 8.8.8.8 &> /dev/null; then
     exit 1
 fi
 
-# 2. Vérification des dépôts officiels (sans sudo)
+# ==============================================================================
+# 2. MISE À JOUR DES SCRIPTS VERSO (Depuis GitHub)
+# ==============================================================================
+echo -e "${BLUE}:: Vérification des scripts système (GitHub)...${NC}"
+
+REPO_URL="https://github.com/dadd3n524/verso-os.git"
+REPO_DIR="$HOME/.verso-os-source"
+
+# A. Récupère le code source
+if [ -d "$REPO_DIR" ]; then
+    # Le dossier existe, on met à jour (silencieusement)
+    git -C "$REPO_DIR" pull --quiet
+else
+    # Si le dossier n'existe pas, on clone
+    echo "Téléchargement des sources..."
+    git clone --quiet "$REPO_URL" "$REPO_DIR"
+fi
+
+# B. Installe les scripts (nécessite sudo)
+if [ -d "$REPO_DIR/usr/local/bin" ]; then
+    # Compare ou on écrase directement
+    # Note : sudo demandera le mot de passe ici si nécessaire
+    sudo cp -rf "$REPO_DIR/usr/local/bin/"* /usr/local/bin/
+    sudo chmod +x /usr/local/bin/*
+    echo -e "${GREEN}✓ Scripts Verso synchronisés.${NC}"
+fi
+
+# ==============================================================================
+# 3. VERIFICATION SYSTÈME (Arch & AUR)
+# ==============================================================================
+
+# Vérification des dépôts officiels (sans sudo)
 # Nécessite le paquet 'pacman-contrib'
 if command -v checkupdates &> /dev/null; then
     OFFICIAL_UPDATES=$(checkupdates | wc -l)
@@ -23,13 +54,13 @@ else
     OFFICIAL_UPDATES="?"
 fi
 
-# 3. Vérification AUR (si yay est installé)
+# Vérification AUR (si yay est installé)
 AUR_UPDATES=0
 if command -v yay &> /dev/null; then
     AUR_UPDATES=$(yay -Qua | wc -l)
 fi
 
-# Calcul du total (si possible)
+# Calcul du total
 if [[ "$OFFICIAL_UPDATES" != "?" ]]; then
     TOTAL=$((OFFICIAL_UPDATES + AUR_UPDATES))
 else
@@ -39,7 +70,7 @@ fi
 # --- AFFICHAGE ET DÉCISION ---
 
 if [[ "$TOTAL" == "0" ]]; then
-    echo -e "${GREEN}✓ Votre système est à jour. Aucune action requise.${NC}"
+    echo -e "${GREEN}✓ Votre système (Arch/AUR) est à jour.${NC}"
     exit 0
 else
     echo ""
@@ -47,14 +78,14 @@ else
     echo -e "Paquets système (Arch) : ${GREEN}$OFFICIAL_UPDATES${NC}"
     echo -e "Paquets AUR (Brave, etc) : ${GREEN}$AUR_UPDATES${NC}"
     echo ""
-    
+   
     # Prompt utilisateur
-    read -p "Voulez-vous lancer la mise à jour maintenant ? (o/n) : " REPOMSE
-    
-    if [[ "$REPOMSE" == "o" || "$REPOMSE" == "O" ]]; then
+    read -p "Voulez-vous lancer la mise à jour maintenant ? (o/n) : " REPONSE
+   
+    if [[ "$REPONSE" == "o" || "$REPONSE" == "O" ]]; then
         echo ""
         echo -e "${BLUE}:: Lancement de la mise à jour...${NC}"
-        
+       
         # Mise à jour combinée (System + AUR)
         # Si yay est là, il gère tout. Sinon, pacman.
         if command -v yay &> /dev/null; then
@@ -62,7 +93,7 @@ else
         else
             sudo pacman -Syu
         fi
-        
+       
         echo ""
         echo -e "${GREEN}Terminé !${NC}"
         sleep 2

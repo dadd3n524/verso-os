@@ -17,68 +17,112 @@ while true; do
     echo -e "${CYAN}Veuillez entrer le mot de passe : ${NC}"
     read -s PASS
     echo ""
+    # On teste le mot de passe avec sudo
     if echo "$PASS" | sudo -S -v -k 2>/dev/null; then
-    echo -e "${GREEN}Mot de passe validé!${NC}"
-    break
+        echo -e "${GREEN}Mot de passe validé!${NC}"
+        break
     else
-    echo -e "${RED}Mot de passe incorrect. Réessayez :${NC}"
+        echo -e "${RED}Mot de passe incorrect. Réessayez :${NC}"
     fi
 done
 
 # --- INSTALLATION ---
-    echo "10"
-    echo "# Mise à jour des dépôts..."
-    echo "$PASS" | sudo -S pacman -Sy --noconfirm
-    # Installation de Steam
-    echo -e "${CYAN}Voulez-vous installer Steam ? (o/n) : ${NC}"
-    read -r REP_STEAM
-    if [[ "$REP_STEAM" =~ ^[o0] ]]; then
+echo "10"
+echo "# Mise à jour des dépôts..."
+echo "$PASS" | sudo -S pacman -Sy --noconfirm
+
+# --- STEAM ---
+echo -e "${CYAN}Voulez-vous installer Steam ? (o/n) : ${NC}"
+read -r REP_STEAM
+if [[ "$REP_STEAM" =~ ^[o0] ]]; then
     echo "Activation de Multilib et installation..."
-    echo "$PASSWORD" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-    echo "$PASSWORD" | sudo -S pacman -Sy
-    ehco "$PASSWORD" | sudo -S pacman -S --noconfirm steam ttf-liberation
-    fi
+    echo "$PASS" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+    echo "$PASS" | sudo -S pacman -Sy
+    echo "$PASS" | sudo -S pacman -S --noconfirm steam ttf-liberation
+fi
+   
+echo "20"
+echo "# Installation des outils de construction..."
+# Nécessaire pour installer Yay et Brave
+echo "$PASS" | sudo -S pacman -S --noconfirm git base-devel
+
+echo "40"
+echo "# Installation de l'assistant YAY..."
+# Installe yay-bin (version pré-compilée rapide)
+if ! command -v yay &> /dev/null; then
+    cd /tmp
+    git clone https://aur.archlinux.org/yay-bin.git
+    cd yay-bin
+    # Rafraîchit le sudo pour que makepkg ne demande pas le mdp
+    echo "$PASS" | sudo -S -v
+    makepkg -si --noconfirm
+    cd ..
+fi
+
+echo "60"
+echo "# Téléchargement de Brave Browser..."
+# Yay s'utilise sans sudo (mot de passe en cache, pourrait être demandé au besoin)
+yay -S --noconfirm brave-bin
+
+# --- AJOUT DES MANQUANTS (AUR) ---
+echo "75"
+echo "# Installation des outils avancés..."
+# On installe ce qui n'a pas pu être mis sur l'ISO (AUR)
+yay -S --noconfirm mission-center wdisplays
+
+# Vérification des dépendances pour les scripts Verso
+echo "$PASS" | sudo -S pacman -S --noconfirm fzf trash-cli
+
+echo "80"
+echo "# Nettoyage..."
+rm -rf /tmp/yay-bin
+
+echo "90"
+echo "# Récupération des dernières mises à jour GitHub..."
+
+# --- CONFIGURATION GITHUB ---
+REPO_URL="https://github.com/dadd3n524/verso-os.git"
+REPO_DIR="$HOME/.verso-os-source"
+
+# 1. Met à jour le code source
+if [ -d "$REPO_DIR" ]; then
+    echo "Mise à jour du dépôt local..."
+    cd "$REPO_DIR"
+    git pull
+else
+    echo "Clonage du dépôt..."
+    git clone "$REPO_URL" "$REPO_DIR"
+fi
+echo "95"
+# 2. Installe les dernières MAJ depuis le dépôt Github
+# (On suppose que ton dépôt a un dossier usr/local/bin)
+if [ -d "$REPO_DIR/usr/local/bin" ]; then
+    echo "Installation des derniers scripts..."
+    # Utilise sudo avec le mot de passe capturé plus tôt
+    echo "$PASS" | sudo -S cp -rf "$REPO_DIR/usr/local/bin/"* /usr/local/bin/
     
-    echo "20"
-    echo "# Installation des outils de construction..."
-    # Nécessaire pour installer Yay et Brave
-    echo "$PASS" | sudo -S pacman -S --noconfirm git base-devel
+    # Remet les permissions d'exécution
+    echo "$PASS" | sudo -S chmod +x /usr/local/bin/*
+    echo "Scripts mis à jour avec succès !"
+fi
 
-    echo "40"
-    echo "# Installation de l'assistant YAY..."
-    # Installe yay-bin (version pré-compilée rapide)
-    if ! command -v yay &> /dev/null; then
-        cd /tmp
-        git clone https://aur.archlinux.org/yay-bin.git
-        cd yay-bin
-        # Rafraîchit le sudo pour que makepkg ne demande pas le mdp
-        echo "$PASS" | sudo -S -v
-        makepkg -si --noconfirm
-        cd ..
-    fi
+echo "100"
+echo "# Terminé ! Bienvenue sur Verso OS."
+sleep 2
 
-    echo "60"
-    echo "# Téléchargement de Brave Browser..."
-    # Yay s'utilise sans sudo (il le demandera si besoin, mais on a le cache)
-    yay -S --noconfirm brave-bin
-
-    echo "90"
-    echo "# Nettoyage..."
-    rm -rf /tmp/yay-bin
-
-    echo "100"
-    echo "# Terminé ! Bienvenue sur Verso OS."
-    sleep 2
-
-    if [ -x "$UPDATE_SCRIPT" ]; then
-    echo "Mise à jour en cours..."
+# --- MISE À JOUR FINALE ---
+if [ -x "$UPDATE_SCRIPT" ]; then
+    echo "Lancement de la mise à jour..."
+    # Lance le script de mise à jour
     "$UPDATE_SCRIPT"
-    else
-    echo "ERREUR: verso-update introuvable"
-    fi
+else
+    echo "Note : Script de mise à jour introuvable, passage à la suite."
+fi
 
-# Marqueur de fin
+# Marqueur de fin (verrouillage du redémarrage)
+mkdir -p "$HOME/.config"
 touch "$LOCKFILE"
 notify-send "Verso OS" "Installation terminée avec succès ! L'interface redémarre..."
 sleep 3
-systemctl restart sddm
+# Redémarrage de SDDM pour appliquer les changements (groupes, icones, etc)
+echo "$PASS" | sudo -S systemctl restart sddm

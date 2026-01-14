@@ -194,7 +194,7 @@ if [ -d "$MOUNTPOINT" ]; then
     echo -e "${GREEN}--> Configuration finale du système...${NC}"
 
     # VALIDATION DE L'EXISTENCE DU DOSSIER /home/verso AVANT LA COPIE DES FICHIERS
-    if [ ! -d "$MOUNTPOINT/home/verso"]; then
+    if [ ! -d "$MOUNTPOINT/home/verso" ]; then
         echo -e "${YELLOW}ERREUR: Dossier utilisateur introuvable, création du dossier en cours..."
         sleep 2
         mkdir -p "$MOUNTPOINT/home/verso"
@@ -227,6 +227,17 @@ if [ -d "$MOUNTPOINT" ]; then
     else
         echo -e "${RED}ERREUR: LES FICHIERS SCRIPTS N'ONT PAS ÉTÉ COPIÉS CORRECTEMENT${NC}"
         sleep 2
+    fi
+
+    # 3. COPIE DU WIFI (NetworkManager)
+    # Vérifie si des connexions existent sur le Live USB
+    if ls /etc/NetworkManager/system-connections/*.nmconnection 1> /dev/null 2>&1; then
+        echo -e "${GREEN}--> Sauvegarde de la connexion WiFi vers le nouveau système...${NC}"
+        mkdir -p "$MOUNTPOINT/etc/NetworkManager/system-connections/"
+        cp -a /etc/NetworkManager/system-connections/*.nmconnection "$MOUNTPOINT/etc/NetworkManager/system-connections/"
+        
+        # CRUCIAL : Permissions strictes (600)
+        chmod 600 "$MOUNTPOINT/etc/NetworkManager/system-connections/"*
     fi
 
     echo -e "${GREEN}--> Activation des services...${NC}"
