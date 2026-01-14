@@ -14,7 +14,6 @@ grub
 os-prober
 networkmanager
 network-manager-applet
-iwd
 bluez
 bluez-utils
 blueman
@@ -55,7 +54,7 @@ xdg-desktop-portal-hyprland
 polkit-kde-agent
 nwg-look
 papirus-icon-theme
-ttf-jetbrains-mono-nerd
+ttf-jetbrains-mono
 ttf-liberation
 ttf-font-awesome
 grim
