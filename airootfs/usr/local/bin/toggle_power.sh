@@ -1,9 +1,0 @@
-#!/bin/bash
-CLASS="verso_power"
-
-if pgrep -f "kitty --class $CLASS" > /dev/null; then
-    pkill -f "kitty --class $CLASS"
-    exit 0
-fi
-
-hyprctl dispatch exec "[float; size 500 400; center; pin; noanim] kitty --class $CLASS -e /usr/local/bin/verso_power_ui.sh"
