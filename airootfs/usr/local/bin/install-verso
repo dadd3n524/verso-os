@@ -12,6 +12,37 @@ ORANGE='\033[0;33m'
 NC='\033[0m'
 
 clear
+# --- 0. PRÉ-VÉRIFICATION RÉSEAU ---
+echo -e "${BLUE}:: Vérification de la connectivité...${NC}"
+
+# 1. On s'assure que le service NetworkManager tourne
+if ! systemctl is-active --quiet NetworkManager; then
+    echo -e "${YELLOW}Démarrage du service réseau...${NC}"
+    systemctl start NetworkManager
+    sleep 3 # On laisse le temps au WiFi de s'initialiser
+fi
+
+# 2. Teste internet (Ping Google)
+if ! ping -c 1 8.8.8.8 &> /dev/null; then
+    echo -e "${RED}Aucune connexion internet détectée.${NC}"
+    echo -e "Lancement du gestionnaire WiFi (nmtui)..."
+    read -p "Appuyez sur Entrée pour ouvrir nmtui..."
+    
+    # On lance l'interface
+    nmtui connect
+    
+    # 3. Re-teste après la fermeture de nmtui
+    echo "Vérification..."
+    if ! ping -c 1 8.8.8.8 &> /dev/null; then
+        echo -e "${RED}Toujours pas d'internet. L'installation ne peut pas continuer.${NC}"
+        exit 1
+    else
+        echo -e "${GREEN}Connexion réussie !${NC}"
+    fi
+else
+    echo -e "${GREEN}Internet connecté.${NC}"
+fi
+
 echo -e "${BLUE}======================================================${NC}"
 echo -e "${YELLOW} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
 echo -e "${BLUE}======================================================${NC}"
