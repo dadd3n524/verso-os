@@ -31,9 +31,6 @@ vulkan-intel
 vulkan-radeon
 vulkan-nouveau
 intel-media-driver
-libva-intel-driver
-mesa-vdpau
-libva-mesa-driver
 pipewire
 pipewire-alsa
 pipewire-jack
