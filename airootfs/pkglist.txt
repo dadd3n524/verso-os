@@ -60,7 +60,7 @@ nwg-look
 papirus-icon-theme
 ttf-jetbrains-mono-nerd
 ttf-liberation
-woff2-font-awesome
+ttf-font-awesome
 grim
 slurp
 wl-clipboard
