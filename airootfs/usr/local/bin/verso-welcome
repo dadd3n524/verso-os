@@ -1,20 +1,33 @@
 #!/bin/bash
 
+# --- COULEURS ---
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
 # --- CONFIGURATION ---
 IMG="/usr/share/backgrounds/verso_banner.jpg"
 LOCKFILE="$HOME/.config/verso-setup-done"
 UPDATE_SCRIPT="/usr/local/bin/verso-update"
+REPO_URL="https://github.com/dadd3n524/verso-os.git"
+REPO_DIR="$HOME/.verso-os-source"
 
 # Si le fichier témoin existe, on quitte
 if [ -f "$LOCKFILE" ]; then
     exit 0
 fi
 
+clear
+echo -e "${BLUE}=======================================${NC}"
+echo -e "${BLUE} BIENVENUE DANS VERSO OS ${NC}"
+echo -e "${BLUE}=======================================${NC}"
 sleep 2
 
-# --- BOUCLE MOT DE PASSE ---
+# --- 1. BOUCLE MOT DE PASSE ---
 while true; do
-    echo -e "${CYAN}Veuillez entrer le mot de passe : ${NC}"
+    echo -e "${CYAN}Veuillez entrer le mot de passe pour commencer : ${NC}"
     read -s PASS
     echo ""
     # On teste le mot de passe avec sudo
@@ -26,103 +39,102 @@ while true; do
     fi
 done
 
-# --- INSTALLATION ---
-echo "10"
-echo "# Mise à jour des dépôts..."
-echo "$PASS" | sudo -S pacman -Sy --noconfirm
+# --- 2. PRÉPARATION & GIT (Indispensable pour la suite) ---
+echo ""
+echo -e "${BLUE}[1/6] Préparation du système...${NC}"
 
-# --- STEAM ---
+# On s'assure d'avoir internet
+if ! ping -c 1 8.8.8.8 &> /dev/null; then
+    echo -e "${RED}Erreur : Pas de connexion internet.${NC}"
+    exit 1
+fi
+
+echo "# Mise à jour des dépôts et installation de Git..."
+# On combine la mise à jour et l'installation de git/base-devel ici
+echo "$PASS" | sudo -S pacman -Sy --noconfirm git base-devel
+
+# --- 3. AUTO-SYNCHRONISATION (La fonctionnalité demandée) ---
+echo ""
+echo -e "${BLUE}[2/6] Synchronisation des scripts Verso...${NC}"
+
+# A. Mise à jour du code source
+if [ -d "$REPO_DIR" ]; then
+    echo " - Mise à jour du dépôt local..."
+    git -C "$REPO_DIR" pull --quiet
+else
+    echo " - Clonage du dépôt officiel..."
+    git clone --quiet "$REPO_URL" "$REPO_DIR"
+fi
+
+# B. Installation des scripts dans le système
+if [ -d "$REPO_DIR/usr/local/bin" ]; then
+    echo " - Installation des dernières versions..."
+    echo "$PASS" | sudo -S cp -rf "$REPO_DIR/usr/local/bin/"* /usr/local/bin/
+    echo "$PASS" | sudo -S chmod +x /usr/local/bin/*
+    echo -e "${GREEN}✓ Scripts synchronisés avec succès.${NC}"
+fi
+
+# --- 4. STEAM (Optionnel) ---
+echo ""
+echo -e "${BLUE}[3/6] Configuration Jeux...${NC}"
 echo -e "${CYAN}Voulez-vous installer Steam ? (o/n) : ${NC}"
 read -r REP_STEAM
+
 if [[ "$REP_STEAM" =~ ^[o0] ]]; then
     echo "Activation de Multilib et installation..."
+    # Petite astuce sed pour décommenter multilib proprement
     echo "$PASS" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-    echo "$PASS" | sudo -S pacman -Sy
+    echo "$PASS" | sudo -S pacman -Sy --noconfirm
     echo "$PASS" | sudo -S pacman -S --noconfirm steam ttf-liberation
 fi
    
-echo "20"
-echo "# Installation des outils de construction..."
-# Nécessaire pour installer Yay et Brave
-echo "$PASS" | sudo -S pacman -S --noconfirm git base-devel
+# --- 5. AUR & YAY ---
+echo ""
+echo -e "${BLUE}[4/6] Installation de l'assistant AUR (Yay)...${NC}"
 
-echo "40"
-echo "# Installation de l'assistant YAY..."
-# Installe yay-bin (version pré-compilée rapide)
 if ! command -v yay &> /dev/null; then
     cd /tmp
+    rm -rf yay-bin # Sécurité
     git clone https://aur.archlinux.org/yay-bin.git
     cd yay-bin
-    # Rafraîchit le sudo pour que makepkg ne demande pas le mdp
+    # Rafraîchit le sudo
     echo "$PASS" | sudo -S -v
     makepkg -si --noconfirm
     cd ..
+    rm -rf yay-bin
+else
+    echo "Yay est déjà installé."
 fi
 
-echo "60"
-echo "# Téléchargement de Brave Browser..."
-# Yay s'utilise sans sudo (mot de passe en cache, pourrait être demandé au besoin)
+# --- 6. LOGICIELS SUPPLÉMENTAIRES ---
+echo ""
+echo -e "${BLUE}[5/6] Installation des logiciels...${NC}"
+echo "# Navigateur Brave..."
 yay -S --noconfirm brave-bin
 
-# --- AJOUT DES MANQUANTS (AUR) ---
-echo "75"
-echo "# Installation des outils avancés..."
-# On installe ce qui n'a pas pu être mis sur l'ISO (AUR)
-yay -S --noconfirm mission-center wdisplays
+echo "# Outils système (Mission Center, wdisplays)..."
+yay -S --noconfirm mission-center wdisplays fzf trash-cli
 
-# Vérification des dépendances pour les scripts Verso
-echo "$PASS" | sudo -S pacman -S --noconfirm fzf trash-cli
+# --- 7. FINALISATION ---
+echo ""
+echo -e "${BLUE}[6/6] Finalisation...${NC}"
 
-echo "80"
-echo "# Nettoyage..."
-rm -rf /tmp/yay-bin
-
-echo "90"
-echo "# Récupération des dernières mises à jour GitHub..."
-
-# --- CONFIGURATION GITHUB ---
-REPO_URL="https://github.com/dadd3n524/verso-os.git"
-REPO_DIR="$HOME/.verso-os-source"
-
-# 1. Met à jour le code source
-if [ -d "$REPO_DIR" ]; then
-    echo "Mise à jour du dépôt local..."
-    cd "$REPO_DIR"
-    git pull
-else
-    echo "Clonage du dépôt..."
-    git clone "$REPO_URL" "$REPO_DIR"
-fi
-echo "95"
-# 2. Installe les dernières MAJ depuis le dépôt Github
-# (On suppose que ton dépôt a un dossier usr/local/bin)
-if [ -d "$REPO_DIR/usr/local/bin" ]; then
-    echo "Installation des derniers scripts..."
-    # Utilise sudo avec le mot de passe capturé plus tôt
-    echo "$PASS" | sudo -S cp -rf "$REPO_DIR/usr/local/bin/"* /usr/local/bin/
-    
-    # Remet les permissions d'exécution
-    echo "$PASS" | sudo -S chmod +x /usr/local/bin/*
-    echo "Scripts mis à jour avec succès !"
-fi
-
-echo "100"
-echo "# Terminé ! Bienvenue sur Verso OS."
-sleep 2
-
-# --- MISE À JOUR FINALE ---
+# Mise à jour finale du système via le script verso-update (qui vient d'être mis à jour !)
 if [ -x "$UPDATE_SCRIPT" ]; then
-    echo "Lancement de la mise à jour..."
-    # Lance le script de mise à jour
+    echo "Lancement d'une vérification finale..."
+    # Note : On ne peut pas facilement passer le mot de passe au script externe
+    # mais sudo a normalement gardé le cache.
     "$UPDATE_SCRIPT"
-else
-    echo "Note : Script de mise à jour introuvable, passage à la suite."
 fi
 
-# Marqueur de fin (verrouillage du redémarrage)
+# Marqueur de fin
 mkdir -p "$HOME/.config"
 touch "$LOCKFILE"
-notify-send "Verso OS" "Installation terminée avec succès ! L'interface redémarre..."
+
+echo ""
+echo -e "${GREEN}Terminé ! Bienvenue sur Verso OS.${NC}"
+notify-send "Verso OS" "Installation terminée avec succès ! Redémarrage de l'interface..."
 sleep 3
-# Redémarrage de SDDM pour appliquer les changements (groupes, icones, etc)
+
+# Redémarrage de SDDM
 echo "$PASS" | sudo -S systemctl restart sddm

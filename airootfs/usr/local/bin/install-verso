@@ -42,7 +42,7 @@ if ! ping -c 1 8.8.8.8 &> /dev/null; then
 else
     echo -e "${GREEN}Internet connecté.${NC}"
 fi
-
+clear
 echo -e "${BLUE}======================================================${NC}"
 echo -e "${YELLOW} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
 echo -e "${BLUE}======================================================${NC}"
