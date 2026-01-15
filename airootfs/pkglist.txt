@@ -57,6 +57,10 @@ papirus-icon-theme
 ttf-jetbrains-mono
 ttf-liberation
 ttf-font-awesome
+ttf-nerd-fonts-symbols
+noto-fonts
+noto-fonts-cjk
+noto-fonts-emoji
 grim
 slurp
 wl-clipboard
@@ -74,6 +78,7 @@ krita
 mpv
 qbittorrent
 qalculate-qt
+btop
 htop
 fzf
 jq
