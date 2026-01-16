@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# --- CONFIGURATION VERSO OS ---
+# Chemins absolus vers le moteur et le modèle
+# (Basé sur votre installation actuelle)
+EXE="/home/verso/llama.cpp/build/bin/llama-cli"
+MODEL="/home/verso/llama.cpp/models/qwen2.5-coder-0.5b-instruct-q8_0.gguf"
+
+# Options de performance pour le Celeron B830
+THREADS=2
+CTX=2048 # Mémoire contextuelle
+
+# --- LOGIQUE ALFRED ---
+
+# Nettoyer l'écran pour un look propre
+clear
+
+if [ -z "$1" ]; then
+    # CAS 1 : Aucun argument fourni -> Mode Expert Linux
+    PROMPT="Tu es un assistant expert en Linux, spécialisé dans Arch et Verso OS. Sois concis, précis et technique."
+    echo -e "\033[1;36m🤖 Alfred (Système) :\033[0m Initialisation du module Expert Linux..."
+else
+    # CAS 2 : Argument fourni -> Mode Personnalisé
+    PROMPT="$1"
+    echo -e "\033[1;35m🎭 Alfred (Custom) :\033[0m Initialisation du mode : \"$1\"..."
+fi
+
+echo "---------------------------------------------------"
+
+# Lancement du moteur
+# -cnv : mode conversation
+# --color : force la couleur
+# -p : injecte le prompt choisi
+$EXE -m $MODEL -t $THREADS -c $CTX -cnv -p "$PROMPT"
