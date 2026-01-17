@@ -5,13 +5,17 @@ if pkill -x "wofi"; then
     exit 0
 fi
 # --- 2. OUVERTURE DU MENU ---
-CHOIX=$(echo -e "🖥️ Steam\n🖥️ RetroArch\n📁 Gestionnaire de fichiers\n🌎 Navigateur Web\n🖥️ Terminal\n🔧 Paramètres" | wofi --show dmenu --prompt "Outils")
+CHOIX=$(echo -e "🖥️ Steam\n🖥️ RetroArch\n📁 Gestionnaire de fichiers\n🌎 Navigateur Web\n📁 Dessins\n📁 Bloc-note\n📁 Calculatrice\n🖥️ Terminal\n🔧 Paramètres\n📁 Aide" | wofi --show dmenu --prompt "Outils")
 # --- 3. ENTRÉES DU MENU ---
 case "$CHOIX" in
     "🖥️ Lteam") steam ;;
     "🖥️ RetroArch") retroarch ;;
     "📁 Gestionnaire de fichiers") dolphin ;;
     "🌎 Navigateur Web") brave ;;
+    "📁 Dessins") drawing ;;
+    "📁 Bloc-note") verso-edit ;;
+    "📁 Calculatrice") qalculate-qt ;;
     "🖥️ Terminal") kitty ;;
     "🔧 Paramètres") lxappearance ;;
+    "📁 Aide") verso_help ;;
 esac

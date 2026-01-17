@@ -1,3 +1,6 @@
+[Added Associations]
+video/mp4=mpv-2.desktop;vlc-2.desktop;
 
 [Default Applications]
+video/mp4=mpv-2.desktop;
 x-scheme-handler/mailto=brave-browser.desktop

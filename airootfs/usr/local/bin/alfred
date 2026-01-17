@@ -1,34 +1,118 @@
 #!/bin/bash
 
-# --- CONFIGURATION VERSO OS ---
-# Chemins absolus vers le moteur et le modèle
-# (Basé sur votre installation actuelle)
+# --- 1. CONFIGURATION ---
 EXE="/home/verso/llama.cpp/build/bin/llama-cli"
-MODEL="/home/verso/llama.cpp/models/qwen2.5-coder-0.5b-instruct-q8_0.gguf"
+MODEL="/home/verso/llama.cpp/models/qwen2.5-1.5b-instruct-q4_0.gguf"
 
-# Options de performance pour le Celeron B830
-THREADS=2
-CTX=2048 # Mémoire contextuelle
-
-# --- LOGIQUE ALFRED ---
-
-# Nettoyer l'écran pour un look propre
-clear
-
-if [ -z "$1" ]; then
-    # CAS 1 : Aucun argument fourni -> Mode Expert Linux
-    PROMPT="Tu es un assistant expert en Linux, spécialisé dans Arch et Verso OS. Sois concis, précis et technique."
-    echo -e "\033[1;36m🤖 Alfred (Système) :\033[0m Initialisation du module Expert Linux..."
-else
-    # CAS 2 : Argument fourni -> Mode Personnalisé
-    PROMPT="$1"
-    echo -e "\033[1;35m🎭 Alfred (Custom) :\033[0m Initialisation du mode : \"$1\"..."
+# Fallback
+if [ ! -f "$MODEL" ]; then 
+    MODEL="/home/verso/llama.cpp/models/qwen2.5-1.5b-instruct-q5_k_m.gguf"
+    if [ ! -f "$MODEL" ]; then MODEL="/home/verso/llama.cpp/models/qwen2.5-coder-0.5b-instruct-q8_0.gguf"; fi
 fi
 
-echo "---------------------------------------------------"
+# --- 2. STRUCTURES ---
+MEM_DIR="$HOME/.alfred_memory"
+KNOW_DIR="$HOME/.alfred_knowledge"
+HISTORY_FILE="$MEM_DIR/history.log"
+IDENTITY_FILE="$MEM_DIR/identity.conf"
+INIT_FLAG="$MEM_DIR/init.done"
+SESSION_LOG="/tmp/alfred_session_${USER}.txt"
 
-# Lancement du moteur
-# -cnv : mode conversation
-# --color : force la couleur
-# -p : injecte le prompt choisi
-$EXE -m $MODEL -t $THREADS -c $CTX -cnv -p "$PROMPT"
+mkdir -p "$MEM_DIR"
+mkdir -p "$KNOW_DIR"
+touch "$HISTORY_FILE"
+
+# --- 3. IDENTITÉ ---
+NICKNAME=""
+if [ -f "$IDENTITY_FILE" ]; then source "$IDENTITY_FILE"; fi
+if [ -n "$NICKNAME" ]; then ADDRESS_USER=", $NICKNAME"; else ADDRESS_USER=""; fi
+
+# --- 4. CHARGEMENT DES CONNAISSANCES (FORCE BRUTE) ---
+# On charge TOUJOURS le contexte technique de base.
+# C'est léger (< 200 tokens) et ça évite les hallucinations type "APT sur Arch".
+
+CORE_KNOWLEDGE=""
+if [ -f "$KNOW_DIR/verso.txt" ]; then
+    CORE_KNOWLEDGE+="\n$(cat "$KNOW_DIR/verso.txt")"
+fi
+if [ -f "$KNOW_DIR/tech.txt" ]; then
+    CORE_KNOWLEDGE+="\n$(cat "$KNOW_DIR/tech.txt")"
+fi
+
+# Pour les connaissances IA, on garde ça optionnel si le mot est détecté au lancement
+# (Optionnel, mais on pourrait aussi le forcer)
+USER_INPUT="$1"
+LOWER_INPUT=$(echo "$USER_INPUT" | tr '[:upper:]' '[:lower:]')
+EXTRA_KNOWLEDGE=""
+
+if [[ "$LOWER_INPUT" == *"llama"* ]] || [[ "$LOWER_INPUT" == *"alfred"* ]]; then
+    if [ -f "$KNOW_DIR/ai.txt" ]; then
+        EXTRA_KNOWLEDGE+="\n$(cat "$KNOW_DIR/ai.txt")"
+    fi
+fi
+
+# --- 5. SYSTEM PROMPT (Le Cerveau complet) ---
+SYSTEM_HEADER="<|im_start|>system
+Tu es Alfred, l'assistant expert de ce système (Verso-OS). 
+Ton interlocuteur est l'utilisateur connecté$ADDRESS_USER.
+
+DONNÉES TECHNIQUES DE RÉFÉRENCE (Respecte scrupuleusement ces faits) :
+$CORE_KNOWLEDGE
+$EXTRA_KNOWLEDGE
+
+RÈGLES : 
+1. Si l'utilisateur demande une commande d'installation, utilise PACMAN (Arch), jamais APT.
+2. Si l'utilisateur dit 'Mon nom est...' ou 'Appelle-moi...', confirme le changement.<|im_end|>"
+
+# --- 6. ACCUEIL ET PROMPT UTILISATEUR ---
+WELCOME_TXT=""
+if [ ! -f "$INIT_FLAG" ]; then
+    WELCOME_TXT="Bonjour, je suis Alfred, votre assistant personnel sur Verso-OS (Arch Linux).
+Je connais votre stack technique (Hyprland, Waybar, Pacman).
+
+• Écrivez \033[33m\"Mon nom est...\"\033[0m pour que je retienne votre nom.
+
+Comment puis-je vous aider ?"
+    touch "$INIT_FLAG"
+else
+    WELCOME_TXT="Bonjour ! Comment puis-je vous aider${ADDRESS_USER} ?"
+fi
+
+if [[ "$USER_INPUT" == "tree" ]]; then
+    TREE=$(ls -R | grep ":$" | head -n 20)
+    FULL_PROMPT="$SYSTEM_HEADER\n<|im_start|>user\nVoici l'arborescence : $TREE. Analyse-la.<|im_end|>\n<|im_start|>assistant\n"
+elif [ -n "$PIPED_DATA" ]; then
+    PIPED_DATA=$(cat)
+    FULL_PROMPT="$SYSTEM_HEADER\n<|im_start|>user\nContenu : $PIPED_DATA\nQuestion : $USER_INPUT<|im_end|>\n<|im_start|>assistant\n"
+elif [ -z "$USER_INPUT" ]; then
+    clear
+    FULL_PROMPT="$SYSTEM_HEADER\n<|im_start|>user\n[Système] Start session.<|im_end|>\n<|im_start|>assistant\n$WELCOME_TXT<|im_end|>"
+else
+    FULL_PROMPT="$SYSTEM_HEADER\n<|im_start|>user\n$USER_INPUT<|im_end|>\n<|im_start|>assistant\n"
+fi
+
+# --- 7. FONCTIONS FINALES ---
+update_memory() {
+    if [ -f "$SESSION_LOG" ]; then
+        sed 's/\x1b\[[0-9;]*m//g' "$SESSION_LOG" >> "$HISTORY_FILE"
+        NEW_NAME=$(grep -oP '(?<=Appelle-moi )[\w]+' "$SESSION_LOG" | tail -1)
+        if [ -z "$NEW_NAME" ]; then NEW_NAME=$(grep -oP '(?<=Mon nom est )[\w]+' "$SESSION_LOG" | tail -1); fi
+        if [ -n "$NEW_NAME" ]; then
+            echo "NICKNAME=\"$NEW_NAME\"" > "$IDENTITY_FILE"
+            echo -e "\n\033[1;32m[Alfred] C'est noté $NEW_NAME.\033[0m"
+        fi
+        rm -f "$SESSION_LOG"
+    fi
+    echo -e "\033[0m"
+}
+trap update_memory EXIT
+
+if [ ! -t 0 ]; then echo "Erreur : Terminal requis."; fi
+script -q -c "$EXE -m '$MODEL' -t 2 -c 4096 -b 1024 -cnv --repeat-penalty 1.1 --temp 0.6 -r '<|im_end|>' -p \"$FULL_PROMPT\"" "$SESSION_LOG"
+echo ""
+read -n 1 -s -r -p "Appuyez sur une touche pour quitter..."
+
+Ce qui va changer :
+Au démarrage, Alfred va "lire" le fichier tech.txt (qui contient maintenant INTERDIT : APT). Cette info reste présente en haut de sa "conscience" pendant toute la discussion.
+Réessayez la question : "Quelle est la différence entre Arch et Debian ?"
+Il devrait maintenant vous dire fièrement : "Arch utilise Pacman et Debian utilise APT".
