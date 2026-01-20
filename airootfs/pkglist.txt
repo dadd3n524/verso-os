@@ -40,7 +40,6 @@ kitty
 krita
 kvantum
 kvantum-qt5
-kvantum-qt6
 less
 libdvdcss
 libpulse
