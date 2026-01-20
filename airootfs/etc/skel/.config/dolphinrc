@@ -1,3 +1,8 @@
+[DetailsMode]
+LeftPadding=0
+UseAlternatingRowColors=false
+UseSystemFont=false
+
 [General]
 Version=202
 ViewPropsTimestamp=2026,1,9,2,5,18.93
@@ -8,3 +13,9 @@ Places Icons Static Size=22
 
 [MainWindow]
 MenuBar=Disabled
+
+[PreviewSettings]
+Plugins=audiothumbnail,directorythumbnail,imagethumbnail,ebookthumbnail,jpegthumbnail,exrthumbnail,windowsimagethumbnail,djvuthumbnail,windowsexethumbnail,opendocumentthumbnail,appimagethumbnail,svgthumbnail,kraorathumbnail,cursorthumbnail,comicbookthumbnail,glycin-heif,glycin-jxl,glycin-svg,glycin-image-rs
+
+[UiSettings]
+ColorScheme=KvDarkRed

@@ -2,12 +2,19 @@
 
 # --- 1. CONFIGURATION ---
 EXE="/home/verso/llama.cpp/build/bin/llama-cli"
+# Modèle principal (Rapide - Q4)
 MODEL="/home/verso/llama.cpp/models/qwen2.5-1.5b-instruct-q4_0.gguf"
 
-# Fallback
-if [ ! -f "$MODEL" ]; then 
+# Fallback : Si le Q4 n'est pas là, on cherche le Q5 (Qualité)
+if [ ! -f "$MODEL" ]; then
     MODEL="/home/verso/llama.cpp/models/qwen2.5-1.5b-instruct-q5_k_m.gguf"
-    if [ ! -f "$MODEL" ]; then MODEL="/home/verso/llama.cpp/models/qwen2.5-coder-0.5b-instruct-q8_0.gguf"; fi
+    
+    # Sécurité : Si aucun des deux n'est là, on arrête tout pour éviter le crash
+    if [ ! -f "$MODEL" ]; then
+        echo "Erreur critique : Aucun modèle 1.5B trouvé dans /home/verso/llama.cpp/models/"
+        read -n 1 -s -r -p "Appuyez sur une touche pour quitter..."
+        exit 1
+    fi
 fi
 
 # --- 2. STRUCTURES ---
