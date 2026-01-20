@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Lance nwg-drawer en mode "volet"
+# -mb 10 : Marge basse
+# -mr 10 : Marge droite
+# -ml 10 : Marge gauche
+# -mt 10 : Marge haut
+# -c 1 : 1 Colonne (liste verticale)
+# -ovl : Mode Overlay (couche supérieure)
+# -term : Terminal à utiliser (kitty)
+# -d : Dossier personnalisé (ton menu perso)
+
+nwg-drawer -c 1 -ml 10 -mt 50 -mb 500 -mr 1500 -ovl -term kitty -d ~/.local/share/verso-menu

@@ -1,0 +1,64 @@
+window {
+    margin: 0px;
+    border: 2px solid #bd93f9;
+    background-color: #1e1e2e;
+    border-radius: 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+}
+
+#input {
+    margin: 5px;
+    border: none;
+    color: #f8f8f2;
+    background-color: #282a36;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+#inner-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#outer-box {
+    margin: 5px;
+    border: none;
+    background-color: transparent;
+}
+
+#scroll {
+    margin: 0px;
+    border: none;
+}
+
+#text {
+    margin: 5px;
+    border: none;
+    color: #f8f8f2;
+}
+
+/* L'élément de base */
+#entry {
+    margin: 5px;
+    padding: 10px; /* Gros padding pour faciliter le clic */
+    border: none;
+    background-color: transparent;
+    border-radius: 8px; /* Coins arrondis au survol */
+}
+
+/* LE SECRET : Gestion du Focus/Selection */
+/* Quand c'est sélectionné au clavier OU à la souris */
+#entry:selected {
+    background-color: #44475a;
+    font-weight: bold;
+    outline: none;
+}
+
+/* Quand la souris passe dessus (Hover) */
+#entry:hover {
+    background-color: #bd93f9; /* Couleur différente au survol souris */
+    color: #282a36; /* Texte devient sombre pour le contraste */
+    cursor: pointer;
+}

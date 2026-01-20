@@ -37,8 +37,11 @@ intel-ucode
 jq
 kdegraphics-thumbnailers
 kitty
+krita
 kvantum
 kvantum-qt5
+kvantum-qt6
+less
 libdvdcss
 libpulse
 libretro-desmume
@@ -63,6 +66,7 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 ntfs-3g
+nwg-bar
 nwg-look
 os-prober
 p7zip
@@ -75,6 +79,7 @@ pipewire-pulse
 playerctl
 polkit-kde-agent
 power-profiles-daemon
+pulsemixer
 qalculate-qt
 qbittorrent
 qt5-wayland
@@ -85,6 +90,7 @@ remmina
 retroarch
 retroarch-assets-xmb
 rofi
+rofi-wayland
 sddm
 slurp
 smartmontools

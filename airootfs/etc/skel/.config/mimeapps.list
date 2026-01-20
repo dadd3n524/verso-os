@@ -1,8 +1,20 @@
 [Added Associations]
-video/mp4=mpv-2.desktop;vlc-2.desktop;
-video/x-matroska=mpv-5.desktop;mpv-4.desktop;mpv-3.desktop;
+video/mkv=mpv.desktop;
+video/mp4=mpv.desktop;
+video/x-matroska=mpv-6.desktop;
 
 [Default Applications]
-video/mp4=mpv-2.desktop;
-video/x-matroska=mpv-5.desktop;
-x-scheme-handler/mailto=brave-browser.desktop
+audio/aac=mpv.desktop
+audio/mp4=mpv.desktop
+audio/mpeg=mpv.desktop
+audio/ogg=mpv.desktop
+audio/x-wav=mpv.desktop
+video/avi=mpv.desktop
+video/mkv=mpv.desktop
+video/mp4=mpv.desktop
+video/quicktime=mpv.desktop
+video/webm=mpv.desktop
+video/x-flv=mpv.desktop
+video/x-matroska=mpv-6.desktop;
+video/x-ms-wmv=mpv.desktop
+video/x-msvideo=mpv.desktop

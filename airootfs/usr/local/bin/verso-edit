@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Gestion du fichier (chemin absolu)
+if [ -n "$1" ]; then
+    FILE=$(realpath "$1")
+else
+    FILE=""
+fi
+
+# On lance Kitty simplement. 
+# Les règles "windowrulev2" dans hyprland.conf vont détecter "verso_editor" 
+# et s'occuper de faire flotter la fenêtre automatiquement.
+hyprctl dispatch exec "kitty --class verso_editor -e micro $FILE"

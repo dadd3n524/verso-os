@@ -1,0 +1,17 @@
+#!/bin/bash
+PIDFILE="/tmp/recording_pid"
+
+if [ -f "$PIDFILE" ]; then
+    # Si on enregistre déjà, on arrête
+    kill -SIGINT $(cat "$PIDFILE")
+    rm "$PIDFILE"
+    notify-send "Enregistrement terminé" "Vidéo sauvegardée dans ~/Vidéos"
+else
+    # Sinon, on commence l'enregistrement
+    FILENAME="$HOME/Vidéos/Enregistrement_$(date +%Y-%m-%d_%H-%M-%S).mp4"
+    mkdir -p "$HOME/Vidéos"
+    notify-send "Enregistrement" "Ça tourne ! (Sélectionnez une zone)"
+    
+    # On lance wf-recorder en arrière-plan
+    wf-recorder -g "$(slurp)" -f "$FILENAME" & echo $! > "$PIDFILE"
+fi

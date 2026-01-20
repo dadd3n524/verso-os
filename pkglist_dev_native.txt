@@ -36,6 +36,7 @@ intel-ucode
 iwd
 jq
 kitty
+krita
 kvantum
 kvantum-qt5
 less
@@ -62,6 +63,8 @@ mpv
 nano
 network-manager-applet
 networkmanager
+nwg-bar
+nwg-drawer
 nwg-look
 openbsd-netcat
 pacman-contrib

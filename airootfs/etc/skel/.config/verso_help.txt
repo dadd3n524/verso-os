@@ -1,44 +1,86 @@
-=========================================
-   VERSO OS - GUIDE & RACCOURCIS
-=========================================
+=============================================================================
+                       VERSO OS :: MANUEL DE L'UTILISATEUR
+=============================================================================
 
- [ NAVIGATION DANS L'INTERFACE ]
-  Win + Espace : Menu principal des applications
-  Win + R : Lanceur rapide (Wofi)
-  Win + Flèches : Aller à la fenêtre à (gauche/droite/haut/bas)
-  Win + Ctrl + Flèches (gauche/droite) : Aller au bureau suivant / précédent
-  Win + 1 à 0 : Changer de bureau (Workspace)
-  Win + Shift + 1-0 : Envoyer la fenêtre vers le bureau #
-  Win + Tab : Vue d'ensemble des fenêtres ouvertes
-  Win + Clic Gauche : Déplacer une fenêtre (Mode Flottant)
-  Win + Clic Droit : Redimensionner (Mode Flottant)
-  Win + V : Mode Flottant / Mode Tuile
-  Win + K : Fermer la fenêtre active
+ [ 0. PHILOSOPHIE ]
+  Verso OS est un système d'exploitation conçu pour vous donner les pleins pouvoirs sur votre PC!
+  La seule personne qui exploite ce PC, à partir de maintenant, c'est vous.
+  Voici le fonctionnement général de l'interface et du système Verso OS :
 
- [ APPLICATIONS CLÉS ]
-  * Astuce : Ajoutez SHIFT pour forcer l'ouverture en split-screen
+ ---------------------------------------------------------------------------
+ [ 1. FENÊTRES GROUPÉES ]
+ 
+  Par défaut, les fenêtres se partagent l'écran. Les applications n'affichent pas de statut sur la barre d'état, elles sont ouvertes ou elles ne le sont pas.
+  Lorsque vous ouvrez une application à partir des raccourcis clavier, Win+() ouvre la fenêtre dans le premier bureau disponible.
+  Pour forcer l'ouverture de la fenêtre dans le bureau actuel, vous devez faire SHIFT+Win+()
+ 
+ ---------------------------------------------------------------------------
+ [ 2. LANCEMENT D'APPLICATIONS ]
+
   Win + Entrée : Terminal (Kitty)
-  Win + W : Navigateur Web (Brave)
+  Win + W : Web (Brave)
   Win + E : Fichiers (Dolphin)
-  Win + S : Jeux (Steam)
+  Win + S : Steam (Jeux)
   Win + T : Torrent (Qbittorrent)
-  Win + C : Calculatrice (Qalculate)
-  Win + F : Recherche de fichiers (Verso Search)
+  Win + C : Calculatrice
+  Win + F : Verso Search (Recherche de fichiers locale)
+  
+  Win + Espace : Menu principal (Tiroir d'applications)
+  Win + R : Lanceur rapide (Recherche type Spotlight)
+  Win + A : Alfred (Assistant IA - Mode Expert)
+  Win + Maj + A : Alfred (Assistant IA - Mode Conversation)
 
- [ SYSTÈME & OUTILS ]
-  Win + Echap : Gestionnaire de tâches (Btop)
-  Win + Shift + S : Capture d'écran (Screenshot)
-  Scroll souris sur le bouton volume : Réglage du volume
+  > MODE INTELLIGENT (Win + Touche) : Ouvre l'appli sur un bureau vide si occupé.
+  > MODE FORCÉ (Win + Maj + Touche) : Force l'ouverture ici (Split-screen).
 
- [ DÉBUGAGE ]
-  Win + Backspace : Recharger l'interface (Refresh)
-  Win + Shift + Back: Recharger le système (Reload)
+ ---------------------------------------------------------------------------
+ [ 3. GESTION DES FENÊTRES & GROUPES (ONGLETS) ]
+  C'est la force de Verso. Transformez votre bureau en navigateur web.
 
- [ AVANCÉ (GROUPES) ]
-  Win + G : Créer un groupe d'onglets
-  Win + Shift + G : Sortir du groupe
-  Win + Z : Espace magique (Caché)
+  Win + G : GROUPEUR (Groupe toutes les fenêtres du bureau en onglets)
+  Win + Maj + G : Sortir la fenêtre active du groupe (Retour en tuile)
+  
+  Win + Gauche/Droite: Naviguer entre les ONGLETS du groupe
+  Win + C : Fermer la fenêtre (Si c'est la dernière, le groupe se dissout)
 
-=========================================
- Appuyez sur 'q' pour fermer cette fenêtre
-=========================================
+  Win + V : Basculer Mode Flottant / Mode Ancré
+  Win + Clic Gauche : Déplacer une fenêtre (Mode Flottant)
+  Win + Clic Droit : Redimensionner une fenêtre
+
+ ---------------------------------------------------------------------------
+ [ 4. NAVIGATION & BUREAUX ]
+
+  Win + Ctrl + Flèches : Changer le FOCUS (Passer à la fenêtre d'à côté)
+  Win + 1 à 0 : Aller au bureau (Workspace) n° X
+  Win + Maj + 1 à 0 : Envoyer la fenêtre active vers le bureau n° X
+  Win + Tab : Vue d'ensemble (Exposé des fenêtres)
+
+ ---------------------------------------------------------------------------
+ [ 5. LA POCHE MAGIQUE (SCRATCHPAD) ]
+  Un espace invisible pour stocker une fenêtre et la rappeler n'importe où.
+
+  Win + Maj + H : Envoyer la fenêtre dans la poche (Hide)
+  Win + H : Faire apparaître/disparaître la poche
+
+ ---------------------------------------------------------------------------
+ [ 6. MULTIMÉDIA & BARRE DES TÂCHES ]
+
+  > MPV (Lecteur Vidéo) :
+    Flèches Haut/Bas : Volume
+    Flèches Gauche/Drt : Avancer/Reculer (5s)
+
+  > Waybar (Barre en haut) :
+    Logo "V" (gauche) : Ouvre le tiroir d'applications favorites (Slide)
+    Scroll sur Modules : La plupart des modules réagissent au scroll souris
+                         (ex: Scroll sur le son change le volume)
+
+ ---------------------------------------------------------------------------
+ [ 7. SYSTÈME & DÉPANNAGE ]
+
+  Win + Echap : Gestionnaire de tâches (Moniteur système)
+  Win + Retour : Recharger l'interface
+  Win + Maj + Retour : Redémarrer l'interface
+
+=============================================================================
+                   Appuyez sur 'q' pour fermer ce manuel
+=============================================================================

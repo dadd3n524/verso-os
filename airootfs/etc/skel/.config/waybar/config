@@ -6,7 +6,7 @@
 
     // --- DISPOSITION ---
     "modules-left": [
-        "custom/launcher",
+        "group/tiroir-apps", // MODIFIÉ : Le groupe remplace le bouton simple
         "hyprland/workspaces"
     ],
     "modules-center": [
@@ -16,11 +16,11 @@
         "idle_inhibitor",
         "custom/help",
         "tray",
-//        "network",
+// "network",
         "pulseaudio", // Son
-//        "cpu", // Processeur
-//       "memory", // RAM
-//        "temperature", // Chauffe
+// "cpu", // Processeur
+// "memory", // RAM
+// "temperature", // Chauffe
         "backlight", // Luminosité
         "custom/sys_monitor",
         "clock",
@@ -30,10 +30,76 @@
 
     // --- MODULES ---
 
+    // DÉFINITION DU TIROIR (NOUVEAU)
+    "group/tiroir-apps": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 500,
+            "children-class": "icones-cachees",
+            "transition-left-to-right": true
+        },
+        "modules": [
+            "custom/launcher",
+            "custom/kitty",
+            "custom/brave",
+            "custom/play",
+            "custom/notepad",
+            "custom/draw",
+            "custom/remmina",
+            "custom/mpv"
+        ]
+    },
+
+    // LA POIGNÉE DU TIROIR (Modifié)
     "custom/launcher": {
         "format": " ",
-        "on-click": "/usr/local/bin/menu_applis",
+        "on-click": "", // Vide pour permettre l'ouverture du tiroir
+        "on-click-right": "/usr/local/bin/menu_applis",
         "tooltip": false
+    },
+
+    // LES APPLIS DU TIROIR (NOUVEAU)
+    "custom/kitty": {
+        "format": "  ", 
+        "tooltip": true,
+        "tooltip-format": "Terminal Kitty",
+        "on-click": "kitty"
+    },
+    "custom/brave": {
+        "format": " 󰖟 ",
+        "tooltip": true,
+        "tooltip-format": "Navigateur Brave",
+        "on-click": "brave"
+    },
+    "custom/play": {
+        "format": "  ",
+        "tooltip": true,
+        "tooltip-format": "Steam",
+        "on-click": "steam"
+    },
+    "custom/notepad": {
+        "format": "  ",
+        "tooltip": true,
+        "tooltip-format": "Bloc-notes",
+        "on-click": "verso-edit"
+    },
+    "custom/draw": {
+        "format": " 󰽉 ",
+        "tooltip": true,
+        "tooltip-format": "Dessin Krita",
+        "on-click": "krita"
+    },
+    "custom/remmina": {
+        "format": " 󰨡 ",
+        "tooltip": true,
+        "tooltip-format": "Bureau à distance (Remmina)",
+        "on-click": "remmina"
+    },
+    "custom/mpv": {
+        "format": "   ",
+        "tooltip": true,
+        "tooltip-format": "Lecteur Vidéo (MPV)",
+        "on-click": "mpv --player-operation-mode=pseudo-gui"
     },
 
     "hyprland/workspaces": {
@@ -58,11 +124,11 @@
         "format-linked": " (No IP)",
         "format-disconnected": "⚠ Déconnecté",
         "tooltip-format": "{ifname} via {gwaddr}",
-        
+       
         // Clic GAUCHE : Ouvre la liste rapide (nmtui)
         // Remplace 'kitty' par ton terminal si besoin
         "on-click": "",
-        
+       
         // Clic DROIT : Ouvre l'éditeur complet
         "on-click-right": ""
     },
@@ -109,7 +175,7 @@
         "format-charging": "{capacity}% ",
         "format-plugged": "{capacity}% ",
         "format-icons": ["", "", "", "", ""],
-        
+       
         // LE LIEN MAGIQUE :
         "on-click": "/usr/local/bin/toggle_power"
     },
@@ -136,6 +202,6 @@
     "custom/power": {
         "format": "⏻ ",
         "tooltip": false,
-        "on-click": "wlogout"
+        "on-click": "nwg-bar" // MODIFIÉ : Utilisation de nwg-bar au lieu de wlogout
     }
 }

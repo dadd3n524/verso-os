@@ -1,0 +1,30 @@
+#!/bin/bash
+# Script de Fermeture Intelligente (Auto-Ungroup)
+
+# 1. On tue la fenêtre active
+hyprctl dispatch killactive
+
+# On laisse un tout petit délai pour que le focus change
+sleep 0.1
+
+# 2. On analyse la fenêtre survivante (celle qui a pris le focus)
+JSON=$(hyprctl activewindow -j)
+ADDR=$(echo "$JSON" | jq -r .address)
+IS_GROUP=$(echo "$JSON" | jq -r .grouped)
+
+# On nettoie la variable IS_GROUP (gère "true", "1", ou vide)
+if [ "$IS_GROUP" != "0" ] && [ "$IS_GROUP" != "false" ] && [ "$IS_GROUP" != "null" ] && [ -n "$IS_GROUP" ]; then
+    
+    # 3. LE TEST DU SOLITAIRE
+    # On essaie de passer à l'onglet suivant
+    hyprctl dispatch changegroupactive f
+    
+    # On regarde qui est actif maintenant
+    NEW_ADDR=$(hyprctl activewindow -j | jq -r .address)
+    
+    # 4. Si l'adresse est la même, c'est qu'on est tout seul !
+    if [ "$ADDR" == "$NEW_ADDR" ]; then
+        # Alors on dissout le groupe (retour en mode tuile)
+        hyprctl dispatch moveoutofgroup
+    fi
+fi

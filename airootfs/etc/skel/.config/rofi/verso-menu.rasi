@@ -1,0 +1,57 @@
+/**
+ * Thème Verso OS - Menu Démarrer (Style Volet)
+ */
+
+* {
+    background-color: transparent;
+    text-color: #f8f8f2;
+    font: "JetBrains Mono 12";
+}
+
+window {
+    location: northwest;
+    anchor: northwest;
+    x-offset: 10px;
+    y-offset: 10px;
+    width: 280px;
+    height: 360px;
+    
+    background-color: #1e1e2e;
+    border: 2px;
+    border-color: #bd93f9;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+mainbox {
+    children: [ listview ];
+}
+
+listview {
+    lines: 8;
+    columns: 1;
+    scrollbar: false;
+    spacing: 5px;
+}
+
+element {
+    padding: 12px;
+    border-radius: 8px;
+}
+
+element normal.normal {
+    background-color: transparent;
+    text-color: #f8f8f2;
+}
+
+/* Effet au survol (Hover) & Sélection */
+element selected.normal {
+    background-color: #44475a;
+    text-color: #bd93f9;
+    border: 1px;
+    border-color: #bd93f9;
+}
+
+element-text {
+    vertical-align: 0.5;
+}

@@ -1,9 +1,9 @@
-/* Style Moderne pour Waybar */
+/* Style Moderne pour Waybar - Version Verso "V" */
 
   * {
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "JetBrainsMono Nerd Font", "Font Awesome 6 Free", Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     min-height: 0;
   }
@@ -13,35 +13,84 @@
     color: white;
   }
 
-  /* Modules (Heure, Wifi, etc.) */
-  #workspaces, #clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, #network, #pulseaudio, #wireplumber, #tray, #mode, #idle_inhibitor, #mpd, #custom-sys_monitor, #custom-help {
+  /* --- LE TIROIR & LE LOGO "V" --- */
+
+  /* 1. Le conteneur du tiroir : Invisible */
+  #group-tiroir-apps drawer {
+      background-color: transparent;
+      margin: 0px;
+      padding: 0px;
+      transition-duration: 0.5s;
+  }
+
+  /* 2. Le bouton "A" (Devenu "V" pour Verso) */
+  #custom-launcher {
+      color: #bd93f9; 
+      font-size: 18px; /* Taille réduite (était 22px) */
+      
+      /* Positionnement pour coller au tiroir */
+      padding-right: 12px;  
+      padding-left: 10px;
+      margin-right: 0px;
+      background-color: transparent;
+  }
+
+  /* 3. Les icônes du tiroir (Brave, Kitty, etc.) */
+  .icones-cachees {
+      background-color: #282a36; 
+      color: #f8f8f2;
+      padding: 0px 8px; /* Un peu plus d'espace autour des icônes */
+      margin: 0px;
+      
+      /* ASTUCE : Marge négative pour "manger" la ligne de séparation */
+      margin-left: -2px; 
+      border-left: none;
+  }
+ 
+  /* La première icône doit avoir le bord gauche carré pour coller au "V" */
+  .icones-cachees:first-child {
+      border-radius: 0px 0px 0px 0px;
+  }
+
+  /* La dernière icône doit avoir le bord droit arrondi */
+  .icones-cachees:last-child {
+      border-radius: 0px 5px 5px 0px;
+  }
+
+  /* Survol des icônes */
+  .icones-cachees:hover {
+      background-color: #bd93f9; 
+      color: #282a36;
+  }
+
+  /* --- AUTRES MODULES --- */
+
+  #workspaces, #clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, #network, #pulseaudio, #wireplumber, #tray, #mode, #idle_inhibitor, #mpd, #custom-sys_monitor, #custom-help, #custom-power {
     padding: 0 15px;
-    margin: 5px 3px; /* Espacement entre les blocs */
-    background-color: #1e1e2e; /* Gris foncé moderne */
+    margin: 5px 3px; 
+    background-color: #1e1e2e; 
     color: #ffffff;
-    border-radius: 15px; /* Coins arrondis */
+    border-radius: 15px; 
     opacity: 0.9;
   }
 
-  /* Espécifique pour les espaces de travail */
+  /* Espaces de travail */
   #workspaces button {
     padding: 0 5px;
     color: #7f849c;
   }
   #workspaces button.active {
-    color: #cba6f7; /* Couleur active (Violet) */
+    color: #cba6f7; 
   }
   #workspaces button:hover {
     background: rgba(0, 0, 0, 0.2);
-    box-shadow: inherit;
-    text-shadow: inherit;
   }
 
-  /* Couleurs spécifiques pour égayer */
+  /* Couleurs spécifiques */
   #clock { color: #cba6f7; font-weight: bold; }
   #network { color: #a6e3a1; }
   #pulseaudio { color: #89b4fa; }
   #battery { color: #f9e2af; }
   #battery.charging { color: #a6e3a1; }
   #battery.warning:not(.charging) { color: #f38ba8; }
-
+  #custom-power { color: #ff5555; }

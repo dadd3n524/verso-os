@@ -1,0 +1,42 @@
+window {
+    background-color: transparent;
+    color: #f8f8f2;
+}
+
+/* Le cadre principal du menu */
+#drawer-box {
+    background-color: #1e1e2e;
+    border: 2px solid #bd93f9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 10px; /* Marge du haut */
+    margin-left: 10px; /* Marge gauche (pour ne pas coller au bord) */
+    
+    /* C'est ici qu'on définit la taille du "Volet" */
+    min-width: 300px;
+    max-width: 300px;
+}
+
+/* La barre de recherche */
+entry {
+    background-color: #282a36;
+    color: #f8f8f2;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 10px;
+    border: none;
+}
+
+/* Les boutons d'applications */
+button {
+    border: none;
+    background: transparent;
+    color: #f8f8f2;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+button:hover {
+    background-color: #bd93f9;
+    color: #282a36;
+}

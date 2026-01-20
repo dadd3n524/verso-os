@@ -1,0 +1,42 @@
+#!/bin/bash
+# Script de Groupement "Force Brute" (Bypass Dwindle via Floating)
+
+# 1. Infos du Chef (Fenêtre active)
+WS=$(hyprctl activeworkspace -j | jq .id)
+MASTER=$(hyprctl activewindow -j)
+MASTER_ADDR=$(echo "$MASTER" | jq -r .address)
+MASTER_X=$(echo "$MASTER" | jq .at[0])
+MASTER_Y=$(echo "$MASTER" | jq .at[1])
+
+# 2. On passe le Chef en Flottant et on crée le groupe
+# (Le flottant permet de s'affranchir des règles de placement)
+hyprctl dispatch togglefloating address:$MASTER_ADDR
+hyprctl dispatch togglegroup address:$MASTER_ADDR
+sleep 0.1
+
+# 3. Liste des autres fenêtres
+CLIENTS=$(hyprctl clients -j | jq -r --arg master "$MASTER_ADDR" ".[] | select(.workspace.id == $WS) | select(.address != \$master) | .address")
+
+# 4. La Boucle de Fusion
+for addr in $CLIENTS; do
+    # A. On passe le client en flottant
+    hyprctl dispatch togglefloating address:$addr
+    
+    # B. On téléporte le client EXACTEMENT sur le Chef
+    hyprctl dispatch movewindowpixel exact $MASTER_X $MASTER_Y,address:$addr
+    
+    # C. On donne le focus au client
+    hyprctl dispatch focuswindow address:$addr
+    
+    # D. On fusionne ! 
+    # Comme ils sont superposés, "moveintogroup" marche forcément
+    hyprctl dispatch moveintogroup l
+    hyprctl dispatch moveintogroup r
+done
+
+# 5. Finalisation
+# On redonne le focus au Chef (qui est maintenant un gros groupe flottant)
+hyprctl dispatch focuswindow address:$MASTER_ADDR
+
+# On repasse le tout en mode Tiling (Tuile)
+hyprctl dispatch togglefloating address:$MASTER_ADDR
