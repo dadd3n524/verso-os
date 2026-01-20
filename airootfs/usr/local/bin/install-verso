@@ -25,8 +25,8 @@ fi
 # 2. Teste internet (Ping Google)
 if ! ping -c 1 8.8.8.8 &> /dev/null; then
     echo -e "${RED}Aucune connexion internet détectée.${NC}"
-    echo -e "Lancement du gestionnaire WiFi (nmtui)..."
-    read -p "Appuyez sur Entrée pour ouvrir nmtui..."
+    echo -e "Lancement de l'interface de connexion..."
+    read -p "Appuyez sur ${GREEN}Entrée${NC} pour vous connecter à un réseau WIFI..."
    
     # On lance l'interface
     nmtui connect
@@ -42,6 +42,7 @@ if ! ping -c 1 8.8.8.8 &> /dev/null; then
 else
     echo -e "${GREEN}Internet connecté.${NC}"
 fi
+
 clear
 echo -e "${BLUE}======================================================${NC}"
 echo -e "${YELLOW} BIENVENUE DANS L'INSTALLATEUR${NC} ${GREEN}VERSO${NC} ${PINK}OS ${NC}"
@@ -134,10 +135,19 @@ echo -e "${GREEN}--> Configuration des paramètres système...${NC}"
 mkdir -p "$MOUNTPOINT/etc"
 echo "KEYMAP=cf" > "$MOUNTPOINT/etc/vconsole.conf"
 
+# --- MISE À JOUR DES MIROIRS (REFLECTOR) ---
+echo ""
+echo -e "${GREEN}--> Optimisation des serveurs de téléchargement...${NC}"
+echo -e "${YELLOW} Recherche des serveurs les plus rapides (Canada/US)...${NC}"
+# Cette commande met à jour la liste des miroirs pour éviter les échecs de téléchargement
+reflector --country Canada --country 'United States' --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+# Force la mise à jour des bases de données avec les nouveaux serveurs
+pacman -Syy
+
 # --- ÉTAPE 4 : INSTALLATION DU COEUR ---
 echo -e "${GREEN}--> Téléchargement et installation du système...${NC}"
-# Ajout explicite de 'sudo'
-pacstrap -K "$MOUNTPOINT" base linux linux-firmware base-devel networkmanager pipewire nano git sudo xdg-user-dirs
+# Ajout explicite de 'sudo' et de la sécurité '|| exit 1'
+pacstrap -K "$MOUNTPOINT" base linux linux-firmware base-devel networkmanager pipewire nano git sudo xdg-user-dirs || { echo -e "${RED}ERREUR CRITIQUE : Échec du téléchargement (Pacstrap). Vérifiez votre connexion.${NC}"; exit 1; }
 
 # Génération Fstab
 genfstab -U "$MOUNTPOINT" >> "$MOUNTPOINT/etc/fstab"
@@ -217,7 +227,8 @@ if [ -d "$MOUNTPOINT" ]; then
     [ ! -f "$PKGLIST" ] && PKGLIST="/root/pkglist.txt"
 
     if [ -f "$PKGLIST" ]; then
-        cat "$PKGLIST" | arch-chroot $MOUNTPOINT pacman -S --needed --noconfirm -
+        # Ajout sécurité : Si l'installation échoue (ex: paquet introuvable), on arrête tout
+        cat "$PKGLIST" | arch-chroot $MOUNTPOINT pacman -S --needed --noconfirm - || { echo -e "${RED}ERREUR PAQUETS : Vérifiez pkglist.txt (ex: kvantum-qt6 doit être kvantum)${NC}"; exit 1; }
     else
         echo -e "${YELLOW}Note : pkglist.txt non trouvé (Installation de base uniquement).${NC}"
     fi
@@ -232,14 +243,25 @@ if [ -d "$MOUNTPOINT" ]; then
         arch-chroot "$MOUNTPOINT" chown verso:verso /home/verso
     fi
    
-    # 1. COPIE DES CONFIGS UTILISATEUR (.config)
-    if [ -d /etc/skel/.config ]; then
-        echo " - Copie des fichiers de configuration..."
-        mkdir -p "$MOUNTPOINT/home/verso/.config"
-        cp -rf /etc/skel/. "$MOUNTPOINT/home/verso/"
-        arch-chroot "$MOUNTPOINT" chown -R verso:verso /home/verso/.config
+    # -------------------------------------------------------------
+    # 1. COPIE DE L'ENVIRONNEMENT COMPLET (CORRECTION CRUCIALE)
+    # -------------------------------------------------------------
+    if [ -d /etc/skel ]; then
+        echo " - Copie de l'environnement utilisateur complet (.config, .bashrc, IA...)..."
+        
+        # ACTIVE DOTGLOB : Permet de copier les fichiers cachés (.bashrc, .config)
+        shopt -s dotglob
+        
+        # Copie TOUT le contenu
+        cp -rf /etc/skel/* "$MOUNTPOINT/home/verso/"
+        
+        # DÉSACTIVE DOTGLOB
+        shopt -u dotglob
+        
+        # Applique les permissions à TOUT le dossier utilisateur (pas juste .config)
+        arch-chroot "$MOUNTPOINT" chown -R verso:verso /home/verso
     else
-        echo -e "${RED}ERREUR: LES FICHIERS CONFIG N'ONT PAS ÉTÉ COPIÉS CORRECTEMENT${NC}"
+        echo -e "${RED}ERREUR: Squelette utilisateur introuvable (/etc/skel)${NC}"
         sleep 2
     fi
 
@@ -293,7 +315,8 @@ if [ -d "$MOUNTPOINT" ]; then
     echo "Tu peux maintenant retirer la clé USB."
     echo "Appuie sur ENTRÉE pour éteindre l'ordinateur."
     read -p ""
-    reboot
+    poweroff
 else
     echo -e "${RED}Erreur critique : Échec de l'installation.${NC}"
+    exit 1
 fi
