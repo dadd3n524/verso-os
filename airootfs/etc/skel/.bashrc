@@ -7,7 +7,7 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
-alias edit-verso='micro ~/.backup/bin/install-verso'
+alias edit-verso='micro ~/verso-iso/airootfs/usr/local/bin/install-verso'
 alias edit-hyprland='micro ~/.config/hypr/hyprland.conf'
 alias edit-waybar='micro ~/.config/waybar/config'
 alias edit-waybar-style='micro ~/.config/waybar/style.css'

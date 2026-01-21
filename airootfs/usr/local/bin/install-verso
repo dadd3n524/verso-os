@@ -15,20 +15,19 @@ clear
 # --- 0. PRÉ-VÉRIFICATION RÉSEAU ---
 echo -e "${BLUE}:: Vérification de la connectivité...${NC}"
 
-# 1. On s'assure que le service NetworkManager tourne
+# 1. S'assure que le service NetworkManager tourne
 if ! systemctl is-active --quiet NetworkManager; then
     echo -e "${YELLOW}Démarrage du service réseau...${NC}"
     systemctl start NetworkManager
-    sleep 3 # On laisse le temps au WiFi de s'initialiser
+    sleep 3 # Lisse le temps au WiFi de s'initialiser
 fi
 
 # 2. Teste internet (Ping Google)
 if ! ping -c 1 8.8.8.8 &> /dev/null; then
     echo -e "${RED}Aucune connexion internet détectée.${NC}"
-    echo -e "Lancement de l'interface de connexion..."
-    read -p "Appuyez sur ${GREEN}Entrée${NC} pour vous connecter à un réseau WIFI..."
+    read -p "Appuyez sur Entrée pour vous connecter à un réseau WIFI..."
    
-    # On lance l'interface
+    # Lance l'interface
     nmtui connect
    
     # 3. Re-teste après la fermeture de nmtui
@@ -140,10 +139,10 @@ echo ""
 echo -e "${GREEN}--> Optimisation des serveurs de téléchargement...${NC}"
 echo -e "${YELLOW} Recherche des serveurs les plus rapides (Canada/US)...${NC}"
 # Cette commande met à jour la liste des miroirs pour éviter les échecs de téléchargement
-reflector --country Canada --country 'United States' --latest 10 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+reflector --country Canada --country 'United States' --latest 20 --age 12 --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 # Force la mise à jour des bases de données avec les nouveaux serveurs
 pacman -Syy
-
+pacman -S --noconfirm archlinux-keyring
 # --- ÉTAPE 4 : INSTALLATION DU COEUR ---
 echo -e "${GREEN}--> Téléchargement et installation du système...${NC}"
 # Ajout explicite de 'sudo' et de la sécurité '|| exit 1'
@@ -206,9 +205,7 @@ AUTOLOGIN
         echo "title Verso OS" > /boot/loader/entries/verso.conf
         echo "linux /vmlinuz-linux" >> /boot/loader/entries/verso.conf
         echo "initrd /initramfs-linux.img" >> /boot/loader/entries/verso.conf
-       
-        # ICI : PAS DE BACKSLASH DEVANT $(blkid).
-        # L'installateur (hôte) calcule l'UUID maintenant et l'écrit en dur dans le fichier.
+
         echo "options root=PARTUUID=$(blkid -s PARTUUID -o value ${TARGET_DISK}${P}2) rw" >> /boot/loader/entries/verso.conf
     else
         pacman -S --noconfirm grub
@@ -248,16 +245,16 @@ if [ -d "$MOUNTPOINT" ]; then
     # -------------------------------------------------------------
     if [ -d /etc/skel ]; then
         echo " - Copie de l'environnement utilisateur complet (.config, .bashrc, IA...)..."
-        
+       
         # ACTIVE DOTGLOB : Permet de copier les fichiers cachés (.bashrc, .config)
         shopt -s dotglob
-        
+       
         # Copie TOUT le contenu
         cp -rf /etc/skel/* "$MOUNTPOINT/home/verso/"
-        
+       
         # DÉSACTIVE DOTGLOB
         shopt -u dotglob
-        
+       
         # Applique les permissions à TOUT le dossier utilisateur (pas juste .config)
         arch-chroot "$MOUNTPOINT" chown -R verso:verso /home/verso
     else
@@ -313,9 +310,9 @@ if [ -d "$MOUNTPOINT" ]; then
     echo -e "Le mot de passe est : ${GREEN}verso${NC}"
     echo ""
     echo "Tu peux maintenant retirer la clé USB."
-    echo "Appuie sur ENTRÉE pour éteindre l'ordinateur."
+    echo "Appuie sur ENTRÉE pour redémarrer l'ordinateur."
     read -p ""
-    poweroff
+    reboot
 else
     echo -e "${RED}Erreur critique : Échec de l'installation.${NC}"
     exit 1
