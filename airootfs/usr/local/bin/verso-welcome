@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# --- COULEURS ---
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
 # --- CONFIGURATION ---
 IMG="/usr/share/backgrounds/verso_banner.jpg"
 LOCKFILE="$HOME/.config/verso-setup-done"
@@ -16,11 +22,14 @@ while true; do
     echo -e "${CYAN}Veuillez entrer le mot de passe : ${NC}"
     read -s PASS
     echo ""
+    # On teste le mot de passe avec sudo
     if echo "$PASS" | sudo -S -v -k 2>/dev/null; then
-    echo -e "${GREEN}Mot de passe validé!${NC}"
-    break
+        echo -e "${GREEN}Mot de passe validé!${NC}"
+        # On garde le sudo actif pour la suite
+        echo "$PASS" | sudo -S -v
+        break
     else
-    echo -e "${RED}Mot de passe incorrect. Réessayez :${NC}"
+        echo -e "${RED}Mot de passe incorrect. Réessayez :${NC}"
     fi
 done
 
@@ -28,16 +37,19 @@ done
     echo "10"
     echo "# Mise à jour des dépôts..."
     echo "$PASS" | sudo -S pacman -Sy --noconfirm
+
     # Installation de Steam
     echo -e "${CYAN}Voulez-vous installer Steam ? (o/n) : ${NC}"
     read -r REP_STEAM
     if [[ "$REP_STEAM" =~ ^[o0] ]]; then
-    echo "Activation de Multilib et installation..."
-    echo "$PASSWORD" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-    echo "$PASSWORD" | sudo -S pacman -Sy
-    ehco "$PASSWORD" | sudo -S pacman -S --noconfirm steam ttf-liberation
+        echo "Activation de Multilib et installation..."
+        # CORRECTION : Utilisation de $PASS au lieu de $PASSWORD
+        echo "$PASS" | sudo -S sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
+        echo "$PASS" | sudo -S pacman -Sy
+        # CORRECTION : 'ehco' -> 'echo'
+        echo "$PASS" | sudo -S pacman -S --noconfirm steam ttf-liberation
     fi
-    
+   
     echo "20"
     echo "# Installation des outils de construction..."
     # Nécessaire pour installer Yay et Brave
@@ -58,8 +70,13 @@ done
 
     echo "60"
     echo "# Téléchargement de Brave Browser..."
-    # Yay s'utilise sans sudo (il le demandera si besoin, mais on a le cache)
     yay -S --noconfirm brave-bin
+
+    # --- AJOUT WAYPAPER & SWWW ---
+    echo "80"
+    echo "# Installation des fonds d'écran (Waypaper)..."
+    # On installe le moteur (swww) et l'interface (waypaper)
+    yay -S --noconfirm swww waypaper
 
     echo "90"
     echo "# Nettoyage..."

@@ -95,6 +95,7 @@ slurp
 smartmontools
 steam
 supertuxkart
+swww
 system-config-printer
 tree
 ttf-jetbrains-mono-nerd

@@ -1,6 +1,7 @@
 brave-bin
 makemkv
 ogmrip
+waypaper
 wlogout
 yay-bin
 yay-bin-debug

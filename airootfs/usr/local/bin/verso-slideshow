@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Configuration : Temps entre chaque image (en secondes)
+# 300 = 5 minutes
+# 600 = 10 minutes
+INTERVAL=75025
+
+# Boucle infinie
+while true; do
+    # Demande à waypaper de choisir une image au hasard dans ton dossier configuré
+    waypaper --random
+    
+    # Attend avant la prochaine
+    sleep $INTERVAL
+done

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# 🔄 SYNC-VERSO-DEV : SYNCHRONISATION DEV -> ISO (CORRIGÉ & COMPLET)
+# 🔄 SYNC-VERSO-DEV : SYNCHRONISATION DEV -> ISO (AVEC WALLPAPERS)
 # ==============================================================================
 
 # --- CONFIGURATION ---
@@ -19,7 +19,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # --- 1. LISTE DES SCRIPTS (/usr/local/bin) ---
-# J'ai ajouté : group_all_windows, smart_close, record-screen, verso-edit, verso_menu
+# Ajout de : verso-slideshow, verso-wallpaper-random
 SCRIPTS_TO_SYNC=(
     "alfred"
     "browser-home"
@@ -46,13 +46,15 @@ SCRIPTS_TO_SYNC=(
     "verso_menu"
     "verso_power_ui"
     "verso_search"
+    "verso-slideshow"
+    "verso-wallpaper-random"
     "verso-update"
     "verso-welcome"
     "zapping.sh"
 )
 
 # --- 2. LISTE DES DOSSIERS DE CONFIG (~/.config) ---
-# J'ai ajouté : mpv, rofi, wofi, gtk-4.0, qt5ct, qt6ct, Kvantum, nwg-look/drawer
+# Ajout de : waypaper
 CONFIGS_TO_SYNC=(
     "hypr"
     "waybar"
@@ -76,6 +78,7 @@ CONFIGS_TO_SYNC=(
     "qt6ct"
     "Kvantum"
     "user-dirs.dirs"
+    "waypaper"
 )
 
 # ==============================================================================
@@ -102,7 +105,6 @@ for item in "${SCRIPTS_TO_SYNC[@]}"; do
         echo -e "${RED} ⚠️ MANQUANT : $item${NC}"
     fi
 done
-# On copie aussi le script de sync lui-même pour l'avoir dans l'ISO si besoin
 cp -f "$0" "$BIN_DEST/extract-verso"
 chmod +x "$BIN_DEST/"*
 
@@ -114,9 +116,8 @@ for item in "${CONFIGS_TO_SYNC[@]}"; do
     SRC="$HOME/.config/$item"
     DEST="$SKEL_CONFIG/$item"
     
-    # On vérifie si c'est un dossier ou un fichier
     if [ -e "$SRC" ]; then
-        rm -rf "$DEST" # Nettoyage avant copie
+        rm -rf "$DEST"
         cp -r "$SRC" "$DEST"
         echo -e " ✅ $item"
     else
@@ -124,7 +125,23 @@ for item in "${CONFIGS_TO_SYNC[@]}"; do
     fi
 done
 
-# 3. IA LOCALE
+# 3. WALLPAPERS (NOUVEAU) 🖼️
+echo ""
+echo -e "${YELLOW}--> Synchronisation des fonds d'écran...${NC}"
+# Adapte ce chemin si tes images sont ailleurs (ex: ~/Pictures/Wallpapers)
+WALL_SRC="$HOME/Images/Wallpapers"
+WALL_DEST="$SKEL/Images/Wallpapers"
+
+if [ -d "$WALL_SRC" ]; then
+    mkdir -p "$WALL_DEST"
+    cp -r "$WALL_SRC/"* "$WALL_DEST/"
+    echo -e " ✅ Images copiées vers /etc/skel/Images/Wallpapers"
+else
+    echo -e "${RED} ⚠️ ATTENTION : Dossier Wallpapers introuvable dans $WALL_SRC${NC}"
+    echo -e " (Vérifie si c'est 'Images' ou 'Pictures')"
+fi
+
+# 4. IA LOCALE
 echo ""
 echo -e "${YELLOW}--> Intégration Alfred/Llama...${NC}"
 LLAMA_SRC="$HOME/llama.cpp/tools/cli/cli.cpp"
@@ -135,26 +152,25 @@ if [ -f "$LLAMA_SRC" ]; then
     echo -e " ✅ cli.cpp"
 fi
 
-# 4. BRAVE
+# 5. BRAVE
 echo ""
 echo -e "${YELLOW}--> Exportation Brave (Clean)...${NC}"
 BRAVE_SRC="$HOME/.config/BraveSoftware/Brave-Browser"
 BRAVE_DEST="$SKEL_CONFIG/BraveSoftware/Brave-Browser"
 if [ -d "$BRAVE_SRC" ]; then
     mkdir -p "$BRAVE_DEST/Default"
-    # On copie juste les prefs, pas le cache ni les mots de passe
     [ -f "$BRAVE_SRC/Local State" ] && cp "$BRAVE_SRC/Local State" "$BRAVE_DEST/"
     [ -f "$BRAVE_SRC/Default/Preferences" ] && cp "$BRAVE_SRC/Default/Preferences" "$BRAVE_DEST/Default/"
     echo -e " ✅ Paramètres Brave copiés"
 fi
 
-# 5. TERMINAL
+# 6. TERMINAL
 echo ""
 echo -e "${YELLOW}--> Bashrc & Profil...${NC}"
 [ -f "$HOME/.bashrc" ] && cp "$HOME/.bashrc" "$SKEL/.bashrc" && echo " ✅ .bashrc"
 [ -f "$HOME/.bash_profile" ] && cp "$HOME/.bash_profile" "$SKEL/.bash_profile" && echo " ✅ .bash_profile"
 
-# 6. EXTRACTION DES LISTES DE PAQUETS
+# 7. EXTRACTION DES LISTES DE PAQUETS
 echo ""
 echo -e "${YELLOW}--> Génération des listes de paquets...${NC}"
 pacman -Qneq > "$ISO_DIR/pkglist_dev_native.txt"

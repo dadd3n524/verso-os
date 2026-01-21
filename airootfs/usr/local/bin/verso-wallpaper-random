@@ -1,0 +1,16 @@
+#!/bin/bash
+# Change le fond d'écran au hasard parmi le dossier Wallpapers
+DIR="$HOME/Images/Wallpapers"
+
+if [ -d "$DIR" ]; then
+    # Prend une image au hasard
+    IMG=$(find "$DIR" -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" \) | shuf -n 1)
+    
+    if [ -n "$IMG" ]; then
+        # Transition fluide (Type: Outer, Bezier rapide)
+        swww img "$IMG" --transition-type outer --transition-pos 0.5,0.5 --transition-step 90 --transition-fps 60
+        
+        # Envoie une notif
+        notify-send -u low "Verso Style" "Nouveau fond d'écran appliqué"
+    fi
+fi
